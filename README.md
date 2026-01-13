@@ -428,4 +428,22 @@ See the demo application for complete examples:
 
 ## License
 
-MIT
+The source code of this project is licensed under the **MIT License**.
+See the [LICENSE](LICENSE) file for details.
+
+This license applies **only** to the code contained in this repository.
+
+---
+
+## Vaadin Spreadsheet dependency
+
+This project provides an integration with **Vaadin Spreadsheet**, which is a
+commercial Vaadin component and is **not covered by the MIT license** of this repository.
+
+Vaadin Spreadsheet is licensed separately under Vaadin’s commercial license.
+A valid Vaadin subscription may be required for production use.
+
+Documentation:
+https://vaadin.com/docs/latest/components/spreadsheet
+
+See also: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
