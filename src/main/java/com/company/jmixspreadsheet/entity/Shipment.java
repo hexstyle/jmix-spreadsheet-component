@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @JmixEntity
@@ -28,21 +28,21 @@ public class Shipment {
 
     @Column(name = "DAY_", nullable = false)
     @NotNull
-    private LocalDateTime day;
+    private LocalDate day;
 
-    @Column(name = "PLANT", nullable = false, length = 50)
+    @JoinColumn(name = "PLANT_ID", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @NotNull
-    @Enumerated(EnumType.STRING)
     private Plant plant;
 
-    @Column(name = "PRODUCT_", nullable = false, length = 50)
+    @JoinColumn(name = "PRODUCT_ID", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @NotNull
-    @Enumerated(EnumType.STRING)
     private Product product;
 
-    @Column(name = "VESSEL", nullable = false, length = 50)
+    @JoinColumn(name = "VESSEL_ID", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @NotNull
-    @Enumerated(EnumType.STRING)
     private Vessel vessel;
 
     @Column(name = "VALUE_", nullable = false, precision = 19, scale = 2)
@@ -65,11 +65,11 @@ public class Shipment {
         this.version = version;
     }
 
-    public LocalDateTime getDay() {
+    public LocalDate getDay() {
         return day;
     }
 
-    public void setDay(LocalDateTime day) {
+    public void setDay(LocalDate day) {
         this.day = day;
     }
 
@@ -109,7 +109,7 @@ public class Shipment {
     public String getInstanceName() {
         return String.format("%s - %s - %s", 
                 day != null ? day.toString() : "", 
-                plant != null ? plant.getCaption() : "", 
-                product != null ? product.getCaption() : "");
+                plant != null ? plant.getName() : "", 
+                product != null ? product.getName() : "");
     }
 }

@@ -7,9 +7,9 @@ import com.company.jmixspreadsheet.entity.Vessel;
 import com.company.jmixspreadsheet.view.main.MainView;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.router.Route;
+import io.jmix.core.DataManager;
 import io.jmix.flowui.view.*;
-
-import java.util.Arrays;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Route(value = "shipments/:id", layout = MainView.class)
 @ViewController("Shipment.detail")
@@ -24,16 +24,19 @@ public class ShipmentDetailView extends StandardDetailView<Shipment> {
     @ViewComponent
     private ComboBox<Vessel> vesselField;
 
+    @Autowired
+    private DataManager dataManager;
+
     @Subscribe
     public void onInit(final InitEvent event) {
-        // Configure enum fields programmatically in Java
-        plantField.setItems(Arrays.asList(Plant.values()));
-        plantField.setItemLabelGenerator(Plant::getCaption);
+        // Load entities from database
+        plantField.setItems(dataManager.load(Plant.class).all().list());
+        plantField.setItemLabelGenerator(Plant::getName);
         
-        productField.setItems(Arrays.asList(Product.values()));
-        productField.setItemLabelGenerator(Product::getCaption);
+        productField.setItems(dataManager.load(Product.class).all().list());
+        productField.setItemLabelGenerator(Product::getName);
         
-        vesselField.setItems(Arrays.asList(Vessel.values()));
-        vesselField.setItemLabelGenerator(Vessel::getCaption);
+        vesselField.setItems(dataManager.load(Vessel.class).all().list());
+        vesselField.setItemLabelGenerator(Vessel::getName);
     }
 }

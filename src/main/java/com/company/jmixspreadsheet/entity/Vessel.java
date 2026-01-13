@@ -1,43 +1,53 @@
 package com.company.jmixspreadsheet.entity;
 
-import io.jmix.core.metamodel.datatype.EnumClass;
-import org.springframework.lang.Nullable;
+import io.jmix.core.entity.annotation.JmixGeneratedValue;
+import io.jmix.core.metamodel.annotation.InstanceName;
+import io.jmix.core.metamodel.annotation.JmixEntity;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
-public enum Vessel implements EnumClass<String> {
-    VESSEL_1("VESSEL_1"),
-    VESSEL_2("VESSEL_2"),
-    VESSEL_3("VESSEL_3"),
-    VESSEL_4("VESSEL_4"),
-    VESSEL_5("VESSEL_5");
+import java.util.UUID;
 
-    private final String id;
+@JmixEntity
+@Table(name = "VESSEL")
+@Entity
+public class Vessel {
 
-    Vessel(String id) {
-        this.id = id;
-    }
+    @Id
+    @Column(name = "ID", nullable = false)
+    @JmixGeneratedValue
+    private UUID id;
 
-    @Override
-    public String getId() {
+    @Version
+    @Column(name = "VERSION", nullable = false)
+    private Integer version;
+
+    @Column(name = "NAME", nullable = false, length = 255)
+    @NotNull
+    @InstanceName
+    private String name;
+
+    public UUID getId() {
         return id;
     }
 
-    @Nullable
-    public static Vessel fromId(String id) {
-        for (Vessel vessel : Vessel.values()) {
-            if (vessel.getId().equals(id)) {
-                return vessel;
-            }
-        }
-        return null;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
-    public String getCaption() {
-        return switch (this) {
-            case VESSEL_1 -> "Vessel 1";
-            case VESSEL_2 -> "Vessel 2";
-            case VESSEL_3 -> "Vessel 3";
-            case VESSEL_4 -> "Vessel 4";
-            case VESSEL_5 -> "Vessel 5";
-        };
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

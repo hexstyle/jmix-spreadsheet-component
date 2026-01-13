@@ -56,17 +56,17 @@ public class ShipmentListView extends StandardListView<Shipment> {
                 .setResizable(true)
                 .setSortable(true);
         
-        shipmentsDataGrid.addColumn(shipment -> shipment.getPlant() != null ? shipment.getPlant().getCaption() : null)
+        shipmentsDataGrid.addColumn(shipment -> shipment.getPlant() != null ? shipment.getPlant().getName() : null)
                 .setHeader(messages.getMessage("com.company.jmixspreadsheet.entity/Shipment.plant"))
                 .setResizable(true)
                 .setSortable(true);
         
-        shipmentsDataGrid.addColumn(shipment -> shipment.getProduct() != null ? shipment.getProduct().getCaption() : null)
+        shipmentsDataGrid.addColumn(shipment -> shipment.getProduct() != null ? shipment.getProduct().getName() : null)
                 .setHeader(messages.getMessage("com.company.jmixspreadsheet.entity/Shipment.product"))
                 .setResizable(true)
                 .setSortable(true);
         
-        shipmentsDataGrid.addColumn(shipment -> shipment.getVessel() != null ? shipment.getVessel().getCaption() : null)
+        shipmentsDataGrid.addColumn(shipment -> shipment.getVessel() != null ? shipment.getVessel().getName() : null)
                 .setHeader(messages.getMessage("com.company.jmixspreadsheet.entity/Shipment.vessel"))
                 .setResizable(true)
                 .setSortable(true);

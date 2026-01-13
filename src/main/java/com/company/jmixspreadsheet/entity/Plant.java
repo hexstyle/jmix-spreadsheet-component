@@ -1,43 +1,53 @@
 package com.company.jmixspreadsheet.entity;
 
-import io.jmix.core.metamodel.datatype.EnumClass;
-import org.springframework.lang.Nullable;
+import io.jmix.core.entity.annotation.JmixGeneratedValue;
+import io.jmix.core.metamodel.annotation.InstanceName;
+import io.jmix.core.metamodel.annotation.JmixEntity;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
-public enum Plant implements EnumClass<String> {
-    PLANT_A("PLANT_A"),
-    PLANT_B("PLANT_B"),
-    PLANT_C("PLANT_C"),
-    PLANT_D("PLANT_D"),
-    PLANT_E("PLANT_E");
+import java.util.UUID;
 
-    private final String id;
+@JmixEntity
+@Table(name = "PLANT")
+@Entity
+public class Plant {
 
-    Plant(String id) {
-        this.id = id;
-    }
+    @Id
+    @Column(name = "ID", nullable = false)
+    @JmixGeneratedValue
+    private UUID id;
 
-    @Override
-    public String getId() {
+    @Version
+    @Column(name = "VERSION", nullable = false)
+    private Integer version;
+
+    @Column(name = "NAME", nullable = false, length = 255)
+    @NotNull
+    @InstanceName
+    private String name;
+
+    public UUID getId() {
         return id;
     }
 
-    @Nullable
-    public static Plant fromId(String id) {
-        for (Plant plant : Plant.values()) {
-            if (plant.getId().equals(id)) {
-                return plant;
-            }
-        }
-        return null;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
-    public String getCaption() {
-        return switch (this) {
-            case PLANT_A -> "Plant A";
-            case PLANT_B -> "Plant B";
-            case PLANT_C -> "Plant C";
-            case PLANT_D -> "Plant D";
-            case PLANT_E -> "Plant E";
-        };
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
