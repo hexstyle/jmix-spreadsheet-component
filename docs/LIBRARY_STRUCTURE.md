@@ -1,71 +1,64 @@
-# Jmix Spreadsheet Library Structure
+﻿# Jmix Spreadsheet Library Structure
 
 This document describes the structure of the Jmix Spreadsheet component library.
 
-## Library Package Structure
+## Library Package Root
 
-The core spreadsheet library code is located in:
-```
-com.hexstyle.jmixspreadsheet.spreadsheet.*
-```
+Reusable spreadsheet code lives under:
 
-This package contains all the reusable spreadsheet component code that can be extracted as a separate Jmix library.
+```
+com.hexstyle.jmixspreadsheet.*
+```
 
 ## Package Organization
 
-### Library Code (Extractable)
+- `com.hexstyle.jmixspreadsheet.api` - Public API interfaces and models
+- `com.hexstyle.jmixspreadsheet.datasource` - Data source adapters for Jmix containers
+- `com.hexstyle.jmixspreadsheet.layout` - Layout engines and layout model (flat + pivot)
+- `com.hexstyle.jmixspreadsheet.index` - LayoutIndex and cell/entity mapping
+- `com.hexstyle.jmixspreadsheet.render` - Renderers and SpreadsheetRenderSupport utilities
+- `com.hexstyle.jmixspreadsheet.edit` - Cell edit handlers (flat + pivot)
+- `com.hexstyle.jmixspreadsheet.diff` - Change analysis, layout deltas, patch appliers
+- `com.hexstyle.jmixspreadsheet.ui` - Styling rules, options, controller factory
+- `com.hexstyle.jmixspreadsheet.ui.component` - SpreadsheetComponent and SpreadsheetComponentConfig
+- `com.hexstyle.jmixspreadsheet.ui.loader` - XML component loader
+- `com.hexstyle.jmixspreadsheet.ui.config` - Spring registration
+- `com.hexstyle.jmixspreadsheet.internal` - Controllers and interaction bridge (not public API)
 
-- **`com.hexstyle.jmixspreadsheet.spreadsheet.api`** - Public API interfaces and classes
-- **`com.hexstyle.jmixspreadsheet.spreadsheet.datasource`** - Data source adapters
-- **`com.hexstyle.jmixspreadsheet.spreadsheet.layout`** - Layout engine and builders
-- **`com.hexstyle.jmixspreadsheet.spreadsheet.index`** - Layout indexing
-- **`com.hexstyle.jmixspreadsheet.spreadsheet.render`** - Rendering components
-- **`com.hexstyle.jmixspreadsheet.spreadsheet.edit`** - Cell editing logic
-- **`com.hexstyle.jmixspreadsheet.spreadsheet.diff`** - Change detection and delta computation
-- **`com.hexstyle.jmixspreadsheet.spreadsheet.ui`** - UI components and factories
-- **`com.hexstyle.jmixspreadsheet.spreadsheet.internal`** - Internal implementation (not part of public API)
+## Demo Application Code (Not Part of Library)
 
-### Application/Demo Code (Not Part of Library)
+The demo application lives under `com.digtp.scm.*` and includes:
 
-- **`com.hexstyle.jmixspreadsheet.entity.*`** - Application entities (Shipment, Plant, Product, etc.)
-- **`com.hexstyle.jmixspreadsheet.view.*`** - Application views
-- **`com.hexstyle.jmixspreadsheet.service.*`** - Application services
-- **`com.hexstyle.jmixspreadsheet.security.*`** - Application security configuration
+- Entities, repositories, and services
+- Views and UI controllers
+- Port balance layout and aggregation code
+
+## Resources
+
+- `src/main/resources/META-INF/resources/schemas/spreadsheet.xsd` - XML schema for `<spreadsheet:spreadsheet>`
 
 ## Spring Configuration
 
-The library uses Spring annotations for component registration:
-
-- **`SpreadsheetComponentRegistration`** - Registers the SpreadsheetComponent with Jmix FlowUI
-- **`SpreadsheetControllerFactory`** - Factory bean for creating controllers (annotated with `@Component`)
-
-These configurations are automatically picked up by Spring component scanning when the library is included as a dependency.
+- `SpreadsheetComponentRegistration` registers the component and schema
+- `SpreadsheetComponentLoader` loads XML attributes into SpreadsheetComponent
+- `SpreadsheetControllerFactory` provides legacy manual controller creation (optional)
 
 ## Dependencies
 
-The library depends on:
 - Jmix Core (`io.jmix.core`)
 - Jmix FlowUI (`io.jmix.flowui`)
 - Vaadin Spreadsheet (`com.vaadin:vaadin-spreadsheet-flow`)
 
 ## Usage in Applications
 
-To use the spreadsheet library in a Jmix application:
-
-1. Add the library as a dependency
-2. Use `SpreadsheetControllerFactory` to create controllers
-3. Use `SpreadsheetComponent` in XML view descriptors
-4. Implement `PivotEditStrategy` for custom pivot editing logic
-
-See the application code in `com.hexstyle.jmixspreadsheet.view.shipment.ShipmentSpreadsheetView` for usage examples.
+Typical usage is through `SpreadsheetComponent.configure(SpreadsheetComponentConfig)` in a view controller.
+The `SpreadsheetControllerFactory` is still available for manual controller creation when needed.
 
 ## Extracting as a Separate Library
 
-To extract this code as a separate Jmix library:
+To extract this code as a standalone JAR:
 
-1. Create a new Gradle module/project
-2. Copy all files from `com.hexstyle.jmixspreadsheet.spreadsheet.*` packages
-3. Update `build.gradle` to build as a library (JAR) instead of application
-4. Remove application-specific dependencies (if any)
-5. Ensure Spring auto-configuration is properly set up
-6. Publish to a Maven repository
+1. Copy the `com.hexstyle.jmixspreadsheet` packages
+2. Copy `src/main/resources/META-INF/resources/schemas/spreadsheet.xsd`
+3. Ensure Spring component scanning includes the spreadsheet packages
+4. Add the required dependencies listed above

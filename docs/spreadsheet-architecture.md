@@ -1,347 +1,190 @@
-# Goal
+﻿# Goal
 
-Implement a Jmix FlowUI component that adapts Vaadin Spreadsheet to behave like DataGrid, with declarative configuration, pivot support, DataComponents integration, editing, and incremental updates.
-
----
-
-## Constraints
-
-* Spreadsheet is coordinate-based (cells, rows, columns)
-* Jmix uses DataComponents (CollectionContainer)
-* Uses DataManager for entity persistence and Metadata for entity creation
-* Must avoid full rerender; compute minimal patches (incremental updates implemented)
-* Pivot edits may affect multiple source rows
+Provide a FlowUI component that wraps Vaadin Spreadsheet and behaves like a Jmix DataGrid, with declarative configuration, pivot support, custom layouts, editing, and incremental updates.
 
 ---
 
-## High-Level Architecture
+## Runtime Modes
+
+The component runs in two modes driven by `SpreadsheetComponentConfig.Mode`:
+
+1. TABLE mode
+- Uses `SpreadsheetTableModel` and a `CollectionContainer`
+- `DefaultSpreadsheetController` builds layouts and handles incremental updates
+- Layout engine is `PivotLayoutBuilder` (pivot) or `FlatTableLayoutBuilder` (flat table)
+
+2. LAYOUT mode
+- Uses a pre-built `SpreadsheetLayout` from a supplier
+- `LayoutSpreadsheetController` renders the layout and handles interaction
+- No incremental updates; `updateAffectedCells()` triggers a full reload
+
+---
+
+## Configuration Entry Point
+
+`SpreadsheetComponent.configure(SpreadsheetComponentConfig)` is the primary entry point.
+It resolves defaults (from XML or component properties), creates the correct controller, binds it, and attaches it.
+
+Key config fields:
+- Mode: `forTable(...)` or `forLayout(...)`
+- Interaction handler and cell key provider
+- read-only, navigation grid visibility
+- auto resize and viewport refresh
+- header row index, header style and enablement
+- header width overrides and deltas
+- style rules and style provider
+- post-render hook (`afterRender`)
+
+The component loader reads XML attributes and sets component defaults:
+`readOnly`, `navigationGridVisible`, `autoRefreshViewport`, `autoResize`, `headerStyle`.
+Config values override these defaults.
+
+---
+
+## Control Flow (TABLE mode)
 
 ```
-StandardListView
-  └─ SpreadsheetTableModel (declarative)
-        ├─ Columns | Grouping | Filter | Sort
-        ├─ Pivot (optional)
-        └─ Editing rules
-              ↓
-      SpreadsheetController
-        ├─ DataSourceAdapter (CollectionContainer)
-        ├─ LayoutEngine (Flat | Pivot)
-        ├─ LayoutIndex (entity↔cells)
-        ├─ Renderer (initial render)
-        ├─ ChangeAnalyzer (diff)
-        └─ PatchApplier (incremental update)
-              ↓
-        Vaadin Spreadsheet
+SpreadsheetComponent.configure(config)
+  -> SpreadsheetComponentFactory creates Spreadsheet + DefaultSpreadsheetController
+  -> controller.bind(model, CollectionContainer)
+      -> DataSourceAdapter
+      -> LayoutEngine (Flat or Pivot)
+      -> SpreadsheetRenderer (PoiSpreadsheetRenderer)
+      -> ChangeAnalyzer + PatchApplier + LayoutValidator
+      -> performInitialRender
+          -> build layout
+          -> render
+          -> postRenderHook
+          -> PoiSpreadsheetRenderer.flush
+          -> build LayoutIndex
+      -> create editors + attach listeners
 ```
 
----
+The postRenderHook is critical. It applies:
+- `SpreadsheetRenderSupport.resizeSheet`
+- `SpreadsheetRenderSupport.refreshViewport`
+- header column widths
+- row grouping refresh
+- `SpreadsheetComponentConfig.afterRender`
 
-## Public API (used by View)
-
-### SpreadsheetTableModel<E>
-
-* entityClass
-* columns: List<SpreadsheetColumn<E>>
-* grouping
-* filter (Condition-based)
-* pivot: Optional<SpreadsheetPivot<E>>
-* interactionHandler
-
-### SpreadsheetController<E, DC>
-
-* bind(model, CollectionContainer<E>)
-* reload()
-* getComponent(): Spreadsheet
-* save() - saves entities using DataManager
-* updateAffectedCells(affectedEntityKeys) - incrementally updates only affected cells
+After any render, the POI renderer must be flushed to refresh changed cells.
 
 ---
 
-## Column Model
+## Control Flow (LAYOUT mode)
 
 ```
-SpreadsheetColumn<E>
-- id
-- header
-- valueProvider: Function<E, Object>
-- setter: BiConsumer<E, Object> (optional)
-- formatter
-- width, alignment
-- editable
-```
-
----
-
-## Pivot Model
-
-### SpreadsheetPivot<E>
-
-* rowAxes: List<PivotAxis<E>>
-* columnAxes: List<PivotAxis<E>>
-* measures: List<PivotMeasure<E>>
-* editStrategy: PivotEditStrategy<E>
-* getRowCompletion(): Optional<Supplier<List<Object>>> - provides complete set of row axis values
-* getColumnCompletion(): Optional<Supplier<List<Object>>> - provides complete set of column axis values
-
-### PivotAxis<E>
-
-* id
-* keyProvider
-* comparator
-* renderMode (HEADER | MERGED | OUTLINE)
-
-### PivotMeasure<E>
-
-* id
-* caption
-* valueProvider
-* aggregation (SUM | COUNT | AVG | CUSTOM)
-
----
-
-## Data Integration
-
-### DataSourceAdapter
-
-Wraps CollectionContainer<E>
-
-* subscribes to item/property changes
-* emits domain-level change events (entityAdded, entityRemoved, entityChanged, refresh)
-
-### Row Identity
-
-* EntityKeyProvider<E> (default: EntityValues::getId)
-
-### Entity Management
-
-The controller uses:
-
-* **DataManager**: For entity persistence (saveAll())
-* **Metadata**: For entity creation (Metadata.create())
-* **EntityAdapter**: Abstraction in cell editors for entity operations (create, merge, setProperty)
-
-Entities are saved via DataManager.saveAll(), which returns an EntitySet with saved instances (including new IDs for created entities). The controller updates the CollectionContainer with these saved entities to ensure consistency.
-
----
-
-## Layout Engine
-
-### LayoutEngine<E>
-
-Interface for building spreadsheet layouts from entities.
-
-### PivotLayoutBuilder<E>
-
-* builds pivot trees (rows, columns) from entities
-* supports row/column completion via Supplier<List<Object>> (getRowCompletion(), getColumnCompletion())
-* calculates measures (SUM, COUNT, AVG, CUSTOM)
-* produces merged regions for headers
-* builds measure headers
-
-### FlatTableLayoutBuilder<E>
-
-* Currently a placeholder (not implemented)
-* Would map rows×columns → cells for flat table layout
-
-### Output: SpreadsheetLayout
-
-* rows, columns
-* merged regions
-* CellBinding list
-
-```
-CellBinding
-- rowIndex
-- columnIndex
-- value
-- style
-- entityRef | pivotContext
+SpreadsheetComponent.configure(config)
+  -> SpreadsheetComponentFactory creates LayoutSpreadsheetController
+  -> controller.bind(model, dummyObject)
+      -> build layout from supplier
+      -> resize (optional)
+      -> render
+      -> refresh viewport (optional)
+      -> header widths + grouping
+      -> LayoutIndex build
+      -> PoiSpreadsheetRenderer.flush
+      -> afterRender
 ```
 
 ---
 
-## Layout Index (critical for diff)
+## Key Components and Responsibilities
 
-```
-LayoutIndex
-- entityKey → Set<CellRef>
-- cellRef → CellBinding
-- pivotCell → Set<entityKey>
-```
+Controllers
+- `DefaultSpreadsheetController` - table mode, incremental updates, editing, persistence
+- `LayoutSpreadsheetController` - layout mode, render only, selection handling
 
-Used for:
+Layout
+- `SpreadsheetLayout` - immutable layout model for cells, merges, and row groups
+- `DefaultSpreadsheetLayout` - simple immutable implementation
+- `FlatTableLayoutBuilder` - builds a header row + data rows and optional row grouping
+- `PivotLayoutBuilder` - builds pivot headers, measures, merges, and data cells
 
-* click handling
-* incremental updates
-* pivot recalculation
+Rendering
+- `PoiSpreadsheetRenderer` - applies values and CSS-like styles via POI
+- `SpreadsheetRenderSupport` - resizes sheet, refreshes viewport, applies header widths, refreshes row grouping
+
+Indexing and Interaction
+- `LayoutIndex` and `DefaultLayoutIndex` map entity keys and cell refs
+- `SpreadsheetInteractionBridge` translates selection events to `SpreadsheetInteractionHandler`
+
+Styling
+- `StyleRule`, `StyleToken`, `CellStyleContext` evaluate conditional styles
+- `SpreadsheetComponentOptions` holds rules and style provider for the renderer
+
+---
+
+## Data Integration and Persistence
+
+TABLE mode uses:
+- `ContainerSpreadsheetDataSource` to watch `CollectionContainer`
+- `DataManager` for persistence (`saveAll`)
+- `Metadata` for entity creation (used by editors)
+
+LAYOUT mode does not use a container or persistence by default.
 
 ---
 
 ## Editing Flow
 
-### Flat Table
+Flat table:
+1. User edits a cell
+2. `FlatTableCellEditor` updates the entity via setter
+3. `DefaultSpreadsheetController` saves entities via `DataManager.saveAll`
+4. `updateAffectedCells` applies incremental updates
 
-1. User edits cell
-2. CellBinding → (entity, setter) via LayoutIndex
-3. Update entity property (setter.accept(entity, newValue))
-4. Controller saves entities via DataManager.saveAll()
-5. Controller updates container with saved entities
-6. Controller applies incremental update via updateAffectedCells()
+Pivot table:
+1. User edits a pivot cell
+2. `PivotTableCellEditor` computes edits via `PivotEditStrategy`
+3. Entities are saved and incremental updates are applied
 
-### Pivot
-
-1. User edits pivot cell
-2. PivotTableCellEditor extracts pivot context (row/column axes, measure)
-3. PivotEditStrategy determines:
-
-   * which entities to modify
-   * how to distribute value
-4. Entities updated (new entities created via Metadata.create())
-5. Controller saves entities via DataManager.saveAll()
-6. Controller updates container with saved entities
-7. Controller applies incremental update via updateAffectedCells()
-8. Layout rebuilt, affected cells updated incrementally
+Read-only is enforced in the controller; non-editable cells are reverted after edits.
 
 ---
 
-## Incremental Updates (Implemented)
+## Incremental Updates (TABLE mode)
 
-### updateAffectedCells()
+`updateAffectedCells`:
+- Rebuilds the layout
+- Builds a new `LayoutIndex`
+- Computes affected cells via index and `LayoutValidator`
+- Attempts patch application (default is no-op)
+- Falls back to direct cell updates via the renderer
+- Flushes POI renderer updates when needed
 
-The controller provides incremental update functionality:
+If structure changes or no affected cells are found, a full `reload()` is used.
 
-1. Rebuilds layout with fresh entity values
-2. Builds new LayoutIndex from rebuilt layout
-3. Finds all cells connected to affected entities via LayoutIndex.getCellRefs()
-4. Creates LayoutDelta with cells to update
-5. Applies incremental update (via PatchApplier or direct cell updates)
-
-**Note**: During cell edit operations, the controller sets a `processingCellEdit` flag to suppress data change listeners (onEntityAdded, onEntityChanged), preventing duplicate updates. The flag is cleared after the incremental update completes.
-
-### ChangeAnalyzer
-
-Input:
-
-* oldEntity (snapshot)
-* newEntity
-* LayoutIndex
-
-Detects:
-
-* changed properties
-* affected columns / measures
-* affected pivot cells
-
-(Currently used for validation, not directly for incremental updates)
-
-### LayoutDelta
-
-```
-- cellsToUpdate (Set<CellRef>)
-- cellsToClear (optional)
-- rowsToInsert (rare, not implemented)
-- rowsToRemove (rare, not implemented)
-```
-
-### PatchApplier
-
-* Currently a placeholder implementation (returns false)
-* Falls back to direct cell updates via applyDirectCellUpdates()
-
-### Direct Cell Updates (Current Implementation)
-
-* Updates only changed cells using renderer's cell renderer
-* Applies value + style to each affected cell
-* Vaadin Spreadsheet's createCell() updates cells directly
-* No refreshAllCellValues() call (avoids full refresh)
-
-Fallback to full rerender (reload()) only if:
-
-* LayoutValidator determines structure change requires full rerender
-* No cells found to update for affected entities
-* Missing dependencies (layoutIndex, changeAnalyzer, currentLayout)
+LAYOUT mode always reloads.
 
 ---
 
-## Interaction Layer
+## Refactoring Guidance
 
-* cell → entity mapping via LayoutIndex
-* supports click, double-click, selection
-* exposes SpreadsheetInteractionHandler<E>
+Keep these invariants intact when refactoring:
 
----
+1. Public API stability
+- Classes under `com.hexstyle.jmixspreadsheet.api` and `SpreadsheetComponent` / `SpreadsheetComponentConfig` are the public surface.
+- Internal controllers and helpers can move, but the API must stay stable.
 
-## Persistence of State
+2. Configure -> create -> bind chain
+- `SpreadsheetComponent.configure` must always create a controller, bind it, and attach the underlying `Spreadsheet`.
 
-SpreadsheetState
+3. Render lifecycle
+- Render must be followed by postRenderHook and `PoiSpreadsheetRenderer.flush`.
+- `LayoutIndex` must be rebuilt after render.
 
-* column order / width
-* sort state
-* filter state
-* pivot expand/collapse
+4. Editing and read-only
+- Read-only enforcement happens in the controller.
+- For pivot edits, `PivotEditStrategy` is required for editability.
 
-Stored via UserSettingsTools
+5. Layout mode isolation
+- `LayoutSpreadsheetController` should remain independent from Jmix DataComponents.
 
----
+6. XML loader defaults
+- Changes to component-level defaults must be mirrored in `SpreadsheetComponentLoader` and `SpreadsheetComponentConfig` resolution.
 
-## Package Structure
-
-```
-spreadsheet/
- ├─ api/
- │   ├─ SpreadsheetController
- │   ├─ SpreadsheetTableModel
- │   ├─ SpreadsheetPivot
- │   ├─ PivotEditStrategy
- │   ├─ PivotAxis
- │   ├─ PivotMeasure
- │   └─ SpreadsheetColumn
- ├─ datasource/
- │   ├─ DataSourceAdapter
- │   └─ ContainerSpreadsheetDataSource
- ├─ layout/
- │   ├─ LayoutEngine
- │   ├─ PivotLayoutBuilder
- │   ├─ SpreadsheetLayout
- │   ├─ CellBinding
- │   ├─ PivotCellBinding
- │   └─ MergedRegion
- ├─ index/
- │   ├─ LayoutIndex
- │   └─ DefaultLayoutIndex
- ├─ render/
- │   ├─ SpreadsheetRenderer
- │   └─ DefaultSpreadsheetRenderer
- ├─ edit/
- │   ├─ FlatTableCellEditor
- │   └─ PivotTableCellEditor
- ├─ diff/
- │   ├─ ChangeAnalyzer
- │   ├─ DefaultChangeAnalyzer
- │   ├─ LayoutDelta
- │   ├─ DefaultLayoutDelta
- │   ├─ PatchApplier
- │   ├─ LayoutValidator
- │   └─ LayoutValidationResult
- ├─ ui/
- │   ├─ SpreadsheetControllerFactory
- │   ├─ component/
- │   │   └─ SpreadsheetComponent
- │   ├─ loader/
- │   │   └─ SpreadsheetComponentLoader
- │   └─ config/
- │       └─ SpreadsheetComponentRegistration
- └─ internal/
-     └─ DefaultSpreadsheetController
-```
-
----
-
-## Cursor Usage Hint
-
-Use this document as the system context. Ask Cursor to:
-
-* generate skeleton classes per package
-* implement ChangeAnalyzer incrementally
-* add unit tests for pivot delta logic
-* refactor APIs only through api/ package
+When changing layout or rendering behavior, review:
+- `DefaultSpreadsheetController` and `LayoutSpreadsheetController`
+- `SpreadsheetComponentFactory` in `SpreadsheetComponent`
+- `SpreadsheetRenderSupport` utilities
