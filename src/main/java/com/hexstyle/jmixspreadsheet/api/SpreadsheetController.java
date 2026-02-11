@@ -102,4 +102,22 @@ public interface SpreadsheetController<E, DC> {
     default boolean isReadOnly() {
         return false;
     }
+
+    /**
+     * Sets visibility for the navigation grid (row/column headings).
+     *
+     * @param visible whether row/column headings should be visible
+     */
+    default void setNavigationGridVisible(boolean visible) {
+        // Default no-op for controllers that don't support navigation grid visibility.
+    }
+
+    /**
+     * Returns whether the navigation grid (row/column headings) is visible.
+     *
+     * @return {@code true} if navigation grid is visible, {@code false} otherwise
+     */
+    default boolean isNavigationGridVisible() {
+        return true;
+    }
 }

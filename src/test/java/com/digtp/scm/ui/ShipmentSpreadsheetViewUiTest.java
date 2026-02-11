@@ -163,7 +163,6 @@ class ShipmentSpreadsheetViewUiTest {
                     filter.setCurrentConfiguration(defaultConfiguration);
                 }
             }
-
             PropertyFilter<LocalDate> dateFromFilter = castFilter(findPropertyFilter(
                     filter, "date", PropertyFilter.Operation.GREATER_OR_EQUAL));
             PropertyFilter<LocalDate> dateToFilter = castFilter(findPropertyFilter(
@@ -194,11 +193,117 @@ class ShipmentSpreadsheetViewUiTest {
             Assertions.assertThat(spreadsheetContains(spreadsheet, String.valueOf(data.negativeStockValue()))).isTrue();
 
             Assertions.assertThat(hasGroupedRows(spreadsheet)).isTrue();
-            Assertions.assertThat(spreadsheet.isRowColHeadingsVisible()).isTrue();
+            Assertions.assertThat(spreadsheet.isRowColHeadingsVisible()).isFalse();
 
             Cell negativeStockCell = findCell(spreadsheet, String.valueOf(data.negativeStockValue()));
             Assertions.assertThat(negativeStockCell).isNotNull();
             Assertions.assertThat(isNegativeStockStyled(negativeStockCell)).isTrue();
+        } finally {
+            dialog.close();
+        }
+    }
+
+    @Test
+    void januaryFilterShowsDataAndExpectedColumns() {
+        TestDataFactory factory = new TestDataFactory(dataManager);
+        January2026PortBalanceData data = factory.ensureJanuary2026PortBalanceData();
+
+        View<?> origin = UiTestUtils.getCurrentView();
+        DialogWindow<View<?>> dialog = dialogWindows.view(origin, "ShipmentSpreadsheet.list").open();
+
+        try {
+            View<?> view = dialog.getView();
+            GenericFilter filter = UiTestUtils.getComponent(view, "genericFilter");
+            Assertions.assertThat(filter).isNotNull();
+
+            if (filter.getCurrentConfiguration() == filter.getEmptyConfiguration()) {
+                var defaultConfiguration = filter.getConfiguration("defaultConfiguration");
+                if (defaultConfiguration != null) {
+                    filter.setCurrentConfiguration(defaultConfiguration);
+                }
+            }
+            filter.setAutoApply(false);
+
+            PropertyFilter<LocalDate> dateFromFilter = castFilter(findPropertyFilter(
+                    filter, "date", PropertyFilter.Operation.GREATER_OR_EQUAL));
+            PropertyFilter<LocalDate> dateToFilter = castFilter(findPropertyFilter(
+                    filter, "date", PropertyFilter.Operation.LESS_OR_EQUAL));
+            PropertyFilter<com.digtp.scm.entity.Track> trackFilter = castFilter(
+                    findPropertyFilter(filter, "track", PropertyFilter.Operation.EQUAL));
+            PropertyFilter<com.digtp.scm.entity.Terminal> terminalFilter = castFilter(
+                    findPropertyFilter(filter, "warehouse.terminal", PropertyFilter.Operation.EQUAL));
+
+            dateFromFilter.setValue(LocalDate.of(2026, 1, 1));
+            dateToFilter.setValue(LocalDate.of(2026, 1, 31));
+            trackFilter.setValue(data.track());
+            terminalFilter.setValue(data.terminal());
+
+            SpreadsheetComponent<?> spreadsheetComponent = UiTestUtils.getComponent(view, "shipmentsSpreadsheet");
+            Spreadsheet spreadsheet = spreadsheetComponent.getSpreadsheet();
+            Assertions.assertThat(spreadsheet).isNotNull();
+            Assertions.assertThat(spreadsheetContains(spreadsheet, String.valueOf(data.inVolume1()))).isFalse();
+            Assertions.assertThat(spreadsheetContains(spreadsheet, String.valueOf(data.outVolume()))).isFalse();
+            filter.getDataLoader().load();
+
+            Assertions.assertThat(spreadsheetContains(spreadsheet, "Vessel")).isTrue();
+            Assertions.assertThat(spreadsheetContains(spreadsheet, "Laycan")).isTrue();
+            Assertions.assertThat(spreadsheetContains(spreadsheet, "Total Out")).isTrue();
+            Assertions.assertThat(rowContains(spreadsheet, 2, "IN")).isTrue();
+            Assertions.assertThat(rowContains(spreadsheet, 2, "OUT")).isTrue();
+            Assertions.assertThat(rowContains(spreadsheet, 2, "STOCK")).isTrue();
+            Assertions.assertThat(spreadsheetContains(spreadsheet, String.valueOf(data.inVolume1()))).isTrue();
+            Assertions.assertThat(spreadsheetContains(spreadsheet, String.valueOf(data.outVolume()))).isTrue();
+        } finally {
+            dialog.close();
+        }
+    }
+
+    @Test
+    void metricSelectionRedrawsSpreadsheetColumns() {
+        TestDataFactory factory = new TestDataFactory(dataManager);
+        January2026PortBalanceData data = factory.ensureJanuary2026PortBalanceData();
+
+        View<?> origin = UiTestUtils.getCurrentView();
+        DialogWindow<View<?>> dialog = dialogWindows.view(origin, "ShipmentSpreadsheet.list").open();
+
+        try {
+            View<?> view = dialog.getView();
+            GenericFilter filter = UiTestUtils.getComponent(view, "genericFilter");
+            Assertions.assertThat(filter).isNotNull();
+
+            if (filter.getCurrentConfiguration() == filter.getEmptyConfiguration()) {
+                var defaultConfiguration = filter.getConfiguration("defaultConfiguration");
+                if (defaultConfiguration != null) {
+                    filter.setCurrentConfiguration(defaultConfiguration);
+                }
+            }
+
+            PropertyFilter<LocalDate> dateFromFilter = castFilter(findPropertyFilter(
+                    filter, "date", PropertyFilter.Operation.GREATER_OR_EQUAL));
+            PropertyFilter<LocalDate> dateToFilter = castFilter(findPropertyFilter(
+                    filter, "date", PropertyFilter.Operation.LESS_OR_EQUAL));
+            PropertyFilter<com.digtp.scm.entity.Track> trackFilter = castFilter(
+                    findPropertyFilter(filter, "track", PropertyFilter.Operation.EQUAL));
+            PropertyFilter<com.digtp.scm.entity.Terminal> terminalFilter = castFilter(
+                    findPropertyFilter(filter, "warehouse.terminal", PropertyFilter.Operation.EQUAL));
+
+            dateFromFilter.setValue(LocalDate.of(2026, 1, 1));
+            dateToFilter.setValue(LocalDate.of(2026, 1, 10));
+            trackFilter.setValue(data.track());
+            terminalFilter.setValue(data.terminal());
+
+            SpreadsheetComponent<?> spreadsheetComponent = UiTestUtils.getComponent(view, "shipmentsSpreadsheet");
+            MultiSelectComboBox<PortBalanceMetric> metrics =
+                    UiTestUtils.getComponent(view, "metricsSelector");
+
+            metrics.setValue(EnumSet.of(PortBalanceMetric.IN));
+            spreadsheetComponent.reload();
+
+            Spreadsheet spreadsheet = spreadsheetComponent.getSpreadsheet();
+            Assertions.assertThat(spreadsheet).isNotNull();
+            Assertions.assertThat(rowContains(spreadsheet, 2, "IN")).isTrue();
+            Assertions.assertThat(rowContains(spreadsheet, 2, "OUT")).isFalse();
+            Assertions.assertThat(rowContains(spreadsheet, 2, "STOCK")).isFalse();
         } finally {
             dialog.close();
         }
@@ -446,6 +551,29 @@ class ShipmentSpreadsheetViewUiTest {
         Sheet sheet = spreadsheet.getWorkbook().getSheetAt(0);
         for (org.apache.poi.ss.usermodel.Row row : sheet) {
             if (row.getOutlineLevel() > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean rowContains(Spreadsheet spreadsheet, int rowIndex, String expected) {
+        if (spreadsheet == null || spreadsheet.getWorkbook() == null) {
+            return false;
+        }
+        Sheet sheet = spreadsheet.getWorkbook().getSheetAt(0);
+        org.apache.poi.ss.usermodel.Row row = sheet.getRow(rowIndex);
+        if (row == null) {
+            return false;
+        }
+        for (org.apache.poi.ss.usermodel.Cell cell : row) {
+            String value = switch (cell.getCellType()) {
+                case STRING -> cell.getStringCellValue();
+                case NUMERIC -> String.valueOf((int) cell.getNumericCellValue());
+                case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
+                default -> null;
+            };
+            if (expected.equals(value)) {
                 return true;
             }
         }

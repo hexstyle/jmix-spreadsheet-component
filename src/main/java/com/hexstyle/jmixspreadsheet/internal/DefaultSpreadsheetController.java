@@ -73,6 +73,7 @@ public class DefaultSpreadsheetController<E, DC> implements SpreadsheetControlle
     private boolean processingCellEdit = false;
 
     private boolean readOnly = true;
+    private boolean navigationGridVisible = true;
 
     // Entity snapshots for change tracking (entity key -> map of property name -> property value)
     private final java.util.Map<Object, java.util.Map<String, Object>> entitySnapshots = new java.util.concurrent.ConcurrentHashMap<>();
@@ -333,6 +334,7 @@ public class DefaultSpreadsheetController<E, DC> implements SpreadsheetControlle
 
         // Re-render the spreadsheet
         renderer.render(component, currentLayout);
+        applyNavigationGridVisibility();
 
         // Refresh the component to ensure changes are visible
         // This is critical for Vaadin Spreadsheet to redraw after filter changes
@@ -372,6 +374,17 @@ public class DefaultSpreadsheetController<E, DC> implements SpreadsheetControlle
     @Override
     public boolean isReadOnly() {
         return readOnly;
+    }
+
+    @Override
+    public void setNavigationGridVisible(boolean visible) {
+        this.navigationGridVisible = visible;
+        applyNavigationGridVisibility();
+    }
+
+    @Override
+    public boolean isNavigationGridVisible() {
+        return navigationGridVisible;
     }
 
     /**
@@ -424,6 +437,7 @@ public class DefaultSpreadsheetController<E, DC> implements SpreadsheetControlle
 
         // Render layout to component
         renderer.render(component, currentLayout);
+        applyNavigationGridVisibility();
 
         // Build layout index after initial render
         rebuildLayoutIndex();
@@ -1293,6 +1307,17 @@ public class DefaultSpreadsheetController<E, DC> implements SpreadsheetControlle
         // Cell editability is controlled by handling edit events and rejecting invalid edits
         // The cells will be editable by default, and we validate in handleCellEdit()
         // Future: Could use cell protection or styles to visually indicate non-editable cells
+    }
+
+    private void applyNavigationGridVisibility() {
+        if (!(component instanceof Spreadsheet)) {
+            return;
+        }
+        try {
+            ((Spreadsheet) component).setRowColHeadingsVisible(navigationGridVisible);
+        } catch (Exception e) {
+            logger.warning("Failed to set navigation grid visibility: " + e.getMessage());
+        }
     }
     
     /**

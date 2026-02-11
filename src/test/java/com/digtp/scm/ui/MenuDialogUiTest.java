@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @UiTest
-@SpringBootTest(classes = {JmixSpreadsheetApplication.class, FlowuiTestAssistConfiguration.class})
+@SpringBootTest(
+        classes = {JmixSpreadsheetApplication.class, FlowuiTestAssistConfiguration.class},
+        properties = "jmix.core.confDir=src/test/resources"
+)
 class MenuDialogUiTest {
 
     @Autowired

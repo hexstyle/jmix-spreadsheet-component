@@ -22,6 +22,7 @@ public class SpreadsheetComponent<E> extends Composite<Div> implements HasSize {
     private SpreadsheetController<E, ?> controller;
     private Spreadsheet spreadsheet;
     private boolean readOnly = true;
+    private boolean navigationGridVisible = true;
 
     /**
      * Creates a new spreadsheet component.
@@ -49,6 +50,7 @@ public class SpreadsheetComponent<E> extends Composite<Div> implements HasSize {
         if (controller != null) {
             this.spreadsheet = controller.getComponent();
             controller.setReadOnly(readOnly);
+            controller.setNavigationGridVisible(navigationGridVisible);
             // Attach the Vaadin Spreadsheet component to the content div
             getContent().add(spreadsheet);
         }
@@ -95,6 +97,27 @@ public class SpreadsheetComponent<E> extends Composite<Div> implements HasSize {
         this.readOnly = readOnly;
         if (controller != null) {
             controller.setReadOnly(readOnly);
+        }
+    }
+
+    /**
+     * Returns whether navigation grid (row/column headings) is visible.
+     *
+     * @return {@code true} if navigation grid is visible
+     */
+    public boolean isNavigationGridVisible() {
+        return navigationGridVisible;
+    }
+
+    /**
+     * Sets navigation grid (row/column headings) visibility.
+     *
+     * @param navigationGridVisible whether navigation grid should be visible
+     */
+    public void setNavigationGridVisible(boolean navigationGridVisible) {
+        this.navigationGridVisible = navigationGridVisible;
+        if (controller != null) {
+            controller.setNavigationGridVisible(navigationGridVisible);
         }
     }
 

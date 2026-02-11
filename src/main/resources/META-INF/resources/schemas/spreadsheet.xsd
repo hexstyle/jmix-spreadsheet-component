@@ -9,7 +9,12 @@
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="layout:baseComponent">
+                    <xs:attributeGroup ref="layout:hasSize"/>
                     <xs:attribute name="dataContainer" type="xs:string"/>
+                    <xs:attribute name="readOnly" type="xs:boolean"/>
+                    <xs:attribute name="read-only" type="xs:boolean"/>
+                    <xs:attribute name="navigationGridVisible" type="xs:boolean"/>
+                    <xs:attribute name="navigation-grid-visible" type="xs:boolean"/>
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>

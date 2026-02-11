@@ -39,10 +39,12 @@ public class PortBalanceSpreadsheetController implements SpreadsheetController<P
     private final DefaultSpreadsheetRenderer<PortBalanceCell, Spreadsheet> renderer;
     private SpreadsheetInteractionHandler<PortBalanceCell> interactionHandler;
     private LayoutIndex<PortBalanceCell> layoutIndex;
+    private SpreadsheetLayout<PortBalanceCell> currentLayout;
     private boolean bound;
     private boolean interactionBound;
     private boolean editListenerBound;
     private boolean readOnly = true;
+    private boolean navigationGridVisible = true;
     private final Map<String, CellStyle> styleCache = new HashMap<>();
     private final Set<Cell> cellsToRefresh = new LinkedHashSet<>();
 
@@ -83,11 +85,13 @@ public class PortBalanceSpreadsheetController implements SpreadsheetController<P
         ensureBound();
         cellsToRefresh.clear();
         PortBalanceTable table = tableSupplier.get();
-        SpreadsheetLayout<PortBalanceCell> layout = layoutBuilder.buildLayout(table);
-        renderer.render(spreadsheet, layout);
-        layoutIndex = new DefaultLayoutIndex<>(layout, this::cellKey);
-        applyLaycanColumnWidth(layout);
-        refreshGrouping(layout);
+        currentLayout = layoutBuilder.buildLayout(table);
+        resizeSheet(currentLayout);
+        renderer.render(spreadsheet, currentLayout);
+        refreshViewport(currentLayout);
+        layoutIndex = new DefaultLayoutIndex<>(currentLayout, this::cellKey);
+        applyLaycanColumnWidth(currentLayout);
+        refreshGrouping(currentLayout);
         if (!cellsToRefresh.isEmpty()) {
             spreadsheet.refreshCells(cellsToRefresh);
         }
@@ -107,6 +111,17 @@ public class PortBalanceSpreadsheetController implements SpreadsheetController<P
     @Override
     public boolean isReadOnly() {
         return readOnly;
+    }
+
+    @Override
+    public void setNavigationGridVisible(boolean visible) {
+        this.navigationGridVisible = visible;
+        refreshGrouping(currentLayout);
+    }
+
+    @Override
+    public boolean isNavigationGridVisible() {
+        return navigationGridVisible;
     }
 
     @Override
@@ -300,7 +315,7 @@ public class PortBalanceSpreadsheetController implements SpreadsheetController<P
 
     private void refreshGrouping(SpreadsheetLayout<PortBalanceCell> layout) {
         boolean hasGroups = layout != null && !layout.getRowGroups().isEmpty();
-        spreadsheet.setRowColHeadingsVisible(hasGroups);
+        spreadsheet.setRowColHeadingsVisible(navigationGridVisible && hasGroups);
         if (!hasGroups) {
             return;
         }
@@ -316,6 +331,15 @@ public class PortBalanceSpreadsheetController implements SpreadsheetController<P
         }
     }
 
+    private void resizeSheet(SpreadsheetLayout<PortBalanceCell> layout) {
+        if (layout == null) {
+            return;
+        }
+        int rows = Math.max(1, layout.getRowCount());
+        int columns = Math.max(1, layout.getColumnCount());
+        spreadsheet.setSheetMaxSize(rows, columns);
+    }
+
     private void applyLaycanColumnWidth(SpreadsheetLayout<PortBalanceCell> layout) {
         if (layout == null) {
             return;
@@ -326,6 +350,49 @@ public class PortBalanceSpreadsheetController implements SpreadsheetController<P
         }
         int width = spreadsheet.getDefaultColumnWidth() + 100;
         spreadsheet.setColumnWidth(laycanColumn, width);
+    }
+
+    private void refreshViewport(SpreadsheetLayout<PortBalanceCell> layout) {
+        ensureViewportRange(layout);
+        try {
+            spreadsheet.refreshAllCellValues();
+        } catch (Exception e) {
+            java.util.logging.Logger.getLogger(PortBalanceSpreadsheetController.class.getName())
+                    .warning("Failed to refresh spreadsheet viewport: " + e.getMessage());
+        }
+    }
+
+    private void ensureViewportRange(SpreadsheetLayout<PortBalanceCell> layout) {
+        if (layout == null) {
+            return;
+        }
+        int expectedColumns = layout.getColumnCount();
+        int expectedRows = layout.getRowCount();
+        if (expectedColumns <= 1 && expectedRows <= 1) {
+            return;
+        }
+        int firstColumn = spreadsheet.getFirstColumn();
+        int lastColumn = spreadsheet.getLastColumn();
+        int firstRow = spreadsheet.getFirstRow();
+        int lastRow = spreadsheet.getLastRow();
+        if (firstColumn > 0 && lastColumn > 1 && firstRow > 0 && lastRow > 1) {
+            return;
+        }
+        try {
+            setViewportField("firstColumn", 1);
+            setViewportField("lastColumn", Math.max(1, expectedColumns));
+            setViewportField("firstRow", 1);
+            setViewportField("lastRow", Math.max(1, expectedRows));
+        } catch (ReflectiveOperationException e) {
+            java.util.logging.Logger.getLogger(PortBalanceSpreadsheetController.class.getName())
+                    .warning("Failed to initialize spreadsheet viewport: " + e.getMessage());
+        }
+    }
+
+    private void setViewportField(String fieldName, int value) throws ReflectiveOperationException {
+        java.lang.reflect.Field field = Spreadsheet.class.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.setInt(spreadsheet, value);
     }
 
     private Integer findHeaderColumn(SpreadsheetLayout<PortBalanceCell> layout, String header) {

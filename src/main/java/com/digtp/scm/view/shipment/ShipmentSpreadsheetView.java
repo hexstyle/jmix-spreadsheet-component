@@ -8,6 +8,7 @@ import com.digtp.scm.entity.Terminal;
 import com.digtp.scm.entity.Track;
 import com.digtp.scm.entity.TransportType;
 import com.digtp.scm.entity.WarehouseTerminal;
+import com.digtp.scm.entity.Movement;
 import com.digtp.scm.portbalance.aggregate.PortBalanceAggregator;
 import com.digtp.scm.portbalance.aggregate.PortBalanceCell;
 import com.digtp.scm.portbalance.aggregate.PortBalanceTable;
@@ -33,9 +34,11 @@ import io.jmix.core.DataManager;
 import io.jmix.flowui.DialogWindows;
 import io.jmix.flowui.component.genericfilter.GenericFilter;
 import io.jmix.flowui.component.propertyfilter.PropertyFilter;
+import io.jmix.flowui.model.CollectionLoader;
 import io.jmix.flowui.view.DialogMode;
 import io.jmix.flowui.view.StandardView;
 import io.jmix.flowui.view.Subscribe;
+import io.jmix.flowui.view.Target;
 import io.jmix.flowui.view.ViewComponent;
 import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
@@ -215,11 +218,15 @@ public class ShipmentSpreadsheetView extends StandardView {
         }
         genericFilter.addConfigurationRefreshListener(event -> {
             attachFilterValueListeners();
-            reloadPortBalance();
+            if (genericFilter.isAutoApply()) {
+                reloadPortBalance();
+            }
         });
         genericFilter.addConfigurationChangeListener(event -> {
             attachFilterValueListeners();
-            reloadPortBalance();
+            if (genericFilter.isAutoApply()) {
+                reloadPortBalance();
+            }
         });
     }
 
@@ -229,6 +236,11 @@ public class ShipmentSpreadsheetView extends StandardView {
             applyDefaultFilterConfiguration();
             attachFilterValueListeners();
         }
+    }
+
+    @Subscribe(id = "movementsDl", target = Target.DATA_LOADER)
+    private void onMovementsDlPostLoad(CollectionLoader.PostLoadEvent<Movement> event) {
+        reloadPortBalance();
     }
 
     private void applyDefaultFilterConfiguration() {
@@ -279,7 +291,12 @@ public class ShipmentSpreadsheetView extends StandardView {
         if (!boundFilters.add(propertyFilter)) {
             return;
         }
-        propertyFilter.addValueChangeListener(event -> reloadPortBalance());
+        propertyFilter.addValueChangeListener(event -> {
+            if (genericFilter != null && !genericFilter.isAutoApply()) {
+                return;
+            }
+            reloadPortBalance();
+        });
     }
 
     private void reloadPortBalance() {
