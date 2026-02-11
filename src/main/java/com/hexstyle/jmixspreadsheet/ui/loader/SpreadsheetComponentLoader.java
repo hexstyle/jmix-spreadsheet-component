@@ -1,6 +1,7 @@
 package com.hexstyle.jmixspreadsheet.ui.loader;
 
 import com.hexstyle.jmixspreadsheet.ui.component.SpreadsheetComponent;
+import io.jmix.flowui.model.CollectionLoader;
 import io.jmix.flowui.xml.layout.loader.AbstractComponentLoader;
 import org.springframework.stereotype.Component;
 
@@ -37,9 +38,22 @@ public class SpreadsheetComponentLoader extends AbstractComponentLoader<Spreadsh
         loadBoolean(element, "auto-resize", resultComponent::setAutoResize);
         loadString(element, "headerStyle", resultComponent::setHeaderStyle);
         loadString(element, "header-style", resultComponent::setHeaderStyle);
+        loadString(element, "dataLoader", this::bindDataLoader);
+        loadString(element, "data-loader", this::bindDataLoader);
         
         // Note: Controller binding is done in Java code (e.g., in view's InitEvent handler)
         // The dataContainer attribute is available via element.attributeValue("dataContainer")
         // but binding is deferred to Java code for flexibility
+    }
+
+    private void bindDataLoader(String loaderId) {
+        if (loaderId == null || loaderId.isBlank()) {
+            return;
+        }
+        CollectionLoader<?> loader = getComponentContext().getViewData().getLoader(loaderId);
+        if (loader == null) {
+            throw new IllegalStateException("Data loader not found: " + loaderId);
+        }
+        resultComponent.setDataLoader(loader);
     }
 }

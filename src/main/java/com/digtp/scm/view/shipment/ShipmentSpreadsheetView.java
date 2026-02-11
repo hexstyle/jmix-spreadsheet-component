@@ -8,7 +8,6 @@ import com.digtp.scm.entity.Terminal;
 import com.digtp.scm.entity.Track;
 import com.digtp.scm.entity.TransportType;
 import com.digtp.scm.entity.WarehouseTerminal;
-import com.digtp.scm.entity.Movement;
 import com.digtp.scm.portbalance.aggregate.PortBalanceAggregator;
 import com.digtp.scm.portbalance.aggregate.PortBalanceCell;
 import com.digtp.scm.portbalance.aggregate.PortBalanceTable;
@@ -32,11 +31,9 @@ import io.jmix.core.DataManager;
 import io.jmix.flowui.DialogWindows;
 import io.jmix.flowui.component.genericfilter.GenericFilter;
 import io.jmix.flowui.component.propertyfilter.PropertyFilter;
-import io.jmix.flowui.model.CollectionLoader;
 import io.jmix.flowui.view.DialogMode;
 import io.jmix.flowui.view.StandardView;
 import io.jmix.flowui.view.Subscribe;
-import io.jmix.flowui.view.Target;
 import io.jmix.flowui.view.ViewComponent;
 import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
@@ -80,7 +77,6 @@ public class ShipmentSpreadsheetView extends StandardView {
 
     private final PortBalanceLayoutBuilder layoutBuilder = new PortBalanceLayoutBuilder();
     private boolean adjustingMetrics;
-    private final Set<PropertyFilter<?>> boundFilters = new HashSet<>();
     private static final List<PortBalanceMetric> METRIC_ORDER = List.of(
             PortBalanceMetric.IN,
             PortBalanceMetric.OUT,
@@ -91,7 +87,6 @@ public class ShipmentSpreadsheetView extends StandardView {
     public void onInit(final InitEvent event) {
         setupMetricSelector();
         setupSpreadsheet();
-        setupFilterListeners();
     }
 
     private void setupSpreadsheet() {
@@ -112,6 +107,9 @@ public class ShipmentSpreadsheetView extends StandardView {
     }
 
     private com.hexstyle.jmixspreadsheet.layout.SpreadsheetLayout<PortBalanceCell> buildPortBalanceLayout() {
+        // Layout is rebuilt on each spreadsheet.reload().
+        // reload() is triggered declaratively by spreadsheet[dataLoader="movementsDl"]
+        // after GenericFilter applies criteria and movementsDl finishes loading.
         return layoutBuilder.buildLayout(buildPortBalanceTable());
     }
 
@@ -213,93 +211,6 @@ public class ShipmentSpreadsheetView extends StandardView {
                 adjustingMetrics = true;
                 metricsSelector.setValue(event.getOldValue());
                 adjustingMetrics = false;
-                return;
-            }
-            reloadPortBalance();
-        });
-    }
-
-    private void setupFilterListeners() {
-        if (genericFilter == null) {
-            return;
-        }
-        genericFilter.addConfigurationRefreshListener(event -> {
-            attachFilterValueListeners();
-            if (genericFilter.isAutoApply()) {
-                reloadPortBalance();
-            }
-        });
-        genericFilter.addConfigurationChangeListener(event -> {
-            attachFilterValueListeners();
-            if (genericFilter.isAutoApply()) {
-                reloadPortBalance();
-            }
-        });
-    }
-
-    @Subscribe
-    public void onReady(final ReadyEvent event) {
-        if (genericFilter != null) {
-            applyDefaultFilterConfiguration();
-            attachFilterValueListeners();
-        }
-    }
-
-    @Subscribe(id = "movementsDl", target = Target.DATA_LOADER)
-    private void onMovementsDlPostLoad(CollectionLoader.PostLoadEvent<Movement> event) {
-        reloadPortBalance();
-    }
-
-    private void applyDefaultFilterConfiguration() {
-        var current = genericFilter.getCurrentConfiguration();
-        if (current != null && current != genericFilter.getEmptyConfiguration()) {
-            return;
-        }
-        var defaultConfiguration = genericFilter.getConfiguration("defaultConfiguration");
-        if (defaultConfiguration != null) {
-            genericFilter.setCurrentConfiguration(defaultConfiguration);
-        }
-    }
-
-    private void attachFilterValueListeners() {
-        boundFilters.clear();
-        var configuration = genericFilter.getCurrentConfiguration();
-        if (configuration == null) {
-            return;
-        }
-        var root = configuration.getRootLogicalFilterComponent();
-        if (root == null) {
-            return;
-        }
-        bindFilterListeners(root);
-    }
-
-    private void bindFilterListeners(io.jmix.flowui.component.logicalfilter.LogicalFilterComponent<?> component) {
-        if (component == null) {
-            return;
-        }
-        if (component instanceof PropertyFilter<?> propertyFilter) {
-            addFilterListener(propertyFilter);
-        }
-        var children = component.getOwnFilterComponents();
-        if (children == null) {
-            return;
-        }
-        for (var child : children) {
-            if (child instanceof io.jmix.flowui.component.logicalfilter.LogicalFilterComponent<?> childLogical) {
-                bindFilterListeners(childLogical);
-            } else if (child instanceof PropertyFilter<?> propertyFilter) {
-                addFilterListener(propertyFilter);
-            }
-        }
-    }
-
-    private void addFilterListener(PropertyFilter<?> propertyFilter) {
-        if (!boundFilters.add(propertyFilter)) {
-            return;
-        }
-        propertyFilter.addValueChangeListener(event -> {
-            if (genericFilter != null && !genericFilter.isAutoApply()) {
                 return;
             }
             reloadPortBalance();
