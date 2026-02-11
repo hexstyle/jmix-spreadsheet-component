@@ -15,6 +15,12 @@
                     <xs:attribute name="read-only" type="xs:boolean"/>
                     <xs:attribute name="navigationGridVisible" type="xs:boolean"/>
                     <xs:attribute name="navigation-grid-visible" type="xs:boolean"/>
+                    <xs:attribute name="autoRefreshViewport" type="xs:boolean"/>
+                    <xs:attribute name="auto-refresh-viewport" type="xs:boolean"/>
+                    <xs:attribute name="autoResize" type="xs:boolean"/>
+                    <xs:attribute name="auto-resize" type="xs:boolean"/>
+                    <xs:attribute name="headerStyle" type="xs:string"/>
+                    <xs:attribute name="header-style" type="xs:string"/>
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>

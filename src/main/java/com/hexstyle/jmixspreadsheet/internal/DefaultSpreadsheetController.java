@@ -53,6 +53,7 @@ public class DefaultSpreadsheetController<E, DC> implements SpreadsheetControlle
     private final SpreadsheetRendererFactory<E, Spreadsheet> rendererFactory;
     private final ChangeAnalyzerFactory<E> changeAnalyzerFactory;
     private final PatchApplierFactory<E, Spreadsheet> patchApplierFactory;
+    private final java.util.function.BiConsumer<Spreadsheet, SpreadsheetLayout<E>> postRenderHook;
 
     private DataSourceAdapter<E> dataSourceAdapter;
     private LayoutEngine<E> layoutEngine;
@@ -106,6 +107,21 @@ public class DefaultSpreadsheetController<E, DC> implements SpreadsheetControlle
             SpreadsheetRendererFactory<E, Spreadsheet> rendererFactory,
             ChangeAnalyzerFactory<E> changeAnalyzerFactory,
             PatchApplierFactory<E, Spreadsheet> patchApplierFactory) {
+        this(component, dataManager, metadata, dataSourceAdapterFactory, layoutEngineFactory,
+                rendererFactory, changeAnalyzerFactory, patchApplierFactory, (spreadsheet, layout) -> {
+        });
+    }
+
+    public DefaultSpreadsheetController(
+            Spreadsheet component,
+            io.jmix.core.DataManager dataManager,
+            io.jmix.core.Metadata metadata,
+            DataSourceAdapterFactory<E> dataSourceAdapterFactory,
+            LayoutEngineFactory<E> layoutEngineFactory,
+            SpreadsheetRendererFactory<E, Spreadsheet> rendererFactory,
+            ChangeAnalyzerFactory<E> changeAnalyzerFactory,
+            PatchApplierFactory<E, Spreadsheet> patchApplierFactory,
+            java.util.function.BiConsumer<Spreadsheet, SpreadsheetLayout<E>> postRenderHook) {
         this.component = component;
         this.dataManager = dataManager;
         this.metadata = metadata;
@@ -116,6 +132,8 @@ public class DefaultSpreadsheetController<E, DC> implements SpreadsheetControlle
         this.rendererFactory = rendererFactory;
         this.changeAnalyzerFactory = changeAnalyzerFactory;
         this.patchApplierFactory = patchApplierFactory;
+        this.postRenderHook = postRenderHook == null ? (spreadsheet, layout) -> {
+        } : postRenderHook;
     }
 
     @Override
@@ -164,13 +182,13 @@ public class DefaultSpreadsheetController<E, DC> implements SpreadsheetControlle
             createCellEditors();
             
             // Set up cell edit listeners
-        setupCellEditListeners();
-        
-        // Set up interaction listeners (e.g., cell clicks)
-        setupInteractionListeners();
+            setupCellEditListeners();
 
-        this.bound = true;
-    } catch (Exception e) {
+            // Set up interaction listeners (e.g., cell clicks)
+            setupInteractionListeners();
+
+            this.bound = true;
+        } catch (Exception e) {
             // Clean up on failure
             cleanup();
             throw new IllegalStateException("Failed to bind controller: " + e.getMessage(), e);
@@ -335,17 +353,22 @@ public class DefaultSpreadsheetController<E, DC> implements SpreadsheetControlle
         // Re-render the spreadsheet
         renderer.render(component, currentLayout);
         applyNavigationGridVisibility();
+        postRenderHook.accept(component, currentLayout);
 
         // Refresh the component to ensure changes are visible
         // This is critical for Vaadin Spreadsheet to redraw after filter changes
         if (component instanceof com.vaadin.flow.component.spreadsheet.Spreadsheet) {
-            com.vaadin.flow.component.spreadsheet.Spreadsheet vaadinSpreadsheet = 
+            com.vaadin.flow.component.spreadsheet.Spreadsheet vaadinSpreadsheet =
                     (com.vaadin.flow.component.spreadsheet.Spreadsheet) component;
             try {
                 vaadinSpreadsheet.refreshAllCellValues();
             } catch (Exception e) {
                 logger.warning("Failed to refresh spreadsheet after reload: " + e.getMessage());
             }
+        }
+        if (renderer instanceof com.hexstyle.jmixspreadsheet.render.PoiSpreadsheetRenderer<?> poiRenderer) {
+            //noinspection unchecked
+            ((com.hexstyle.jmixspreadsheet.render.PoiSpreadsheetRenderer<E>) poiRenderer).flush(component);
         }
 
         // Rebuild layout index after render
@@ -438,6 +461,12 @@ public class DefaultSpreadsheetController<E, DC> implements SpreadsheetControlle
         // Render layout to component
         renderer.render(component, currentLayout);
         applyNavigationGridVisibility();
+        postRenderHook.accept(component, currentLayout);
+
+        if (renderer instanceof com.hexstyle.jmixspreadsheet.render.PoiSpreadsheetRenderer<?> poiRenderer) {
+            //noinspection unchecked
+            ((com.hexstyle.jmixspreadsheet.render.PoiSpreadsheetRenderer<E>) poiRenderer).flush(component);
+        }
 
         // Build layout index after initial render
         rebuildLayoutIndex();

@@ -7,7 +7,7 @@ import com.digtp.scm.portbalance.columns.TrackKey;
 import com.digtp.scm.portbalance.data.TestDataFactory;
 import com.digtp.scm.portbalance.data.TestDataFactory.January2026PortBalanceData;
 import com.digtp.scm.portbalance.layout.PortBalanceCellContext;
-import com.digtp.scm.portbalance.ui.PortBalanceSpreadsheetController;
+import com.hexstyle.jmixspreadsheet.internal.LayoutSpreadsheetController;
 import com.hexstyle.jmixspreadsheet.ui.component.SpreadsheetComponent;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
@@ -65,7 +65,7 @@ class ShipmentSpreadsheetViewUiTest {
             Object controller = spreadsheet.getController();
             Assertions.assertThat(controller).isNotNull();
             Assertions.assertThat(controller.getClass().getName())
-                    .isEqualTo(PortBalanceSpreadsheetController.class.getName());
+                    .isEqualTo(LayoutSpreadsheetController.class.getName());
 
             GenericFilter filter = UiTestUtils.getComponent(view, "genericFilter");
             Assertions.assertThat(filter).isNotNull();

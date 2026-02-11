@@ -119,7 +119,7 @@ public class PivotLayoutBuilder<E> implements LayoutEngine<E> {
         // Build row headers and data cells (including regular columns)
         buildRowHeadersAndData(rowTree, columnTree, pivot, regularColumns, regularColCount, rowHeaderCols, currentRow, cellBindings, mergedRegions);
 
-        return new DefaultSpreadsheetLayout<>(totalRows, totalCols, cellBindings, mergedRegions);
+        return new DefaultSpreadsheetLayout<>(totalRows, totalCols, cellBindings, mergedRegions, List.of());
     }
 
     /**
@@ -890,49 +890,4 @@ public class PivotLayoutBuilder<E> implements LayoutEngine<E> {
         }
     }
 
-    /**
-     * Default implementation of SpreadsheetLayout.
-     */
-    private static class DefaultSpreadsheetLayout<E> implements SpreadsheetLayout<E> {
-        private final int rowCount;
-        private final int columnCount;
-        private final List<CellBinding<E>> cellBindings;
-        private final List<MergedRegion> mergedRegions;
-        private final List<RowGroup> rowGroups;
-
-        DefaultSpreadsheetLayout(int rowCount, int columnCount,
-                                List<CellBinding<E>> cellBindings,
-                                List<MergedRegion> mergedRegions) {
-            this.rowCount = rowCount;
-            this.columnCount = columnCount;
-            this.cellBindings = cellBindings != null ? new ArrayList<>(cellBindings) : new ArrayList<>();
-            this.mergedRegions = mergedRegions != null ? new ArrayList<>(mergedRegions) : new ArrayList<>();
-            this.rowGroups = new ArrayList<>();
-        }
-
-        @Override
-        public int getRowCount() {
-            return rowCount;
-        }
-
-        @Override
-        public int getColumnCount() {
-            return columnCount;
-        }
-
-        @Override
-        public List<CellBinding<E>> getCellBindings() {
-            return Collections.unmodifiableList(cellBindings);
-        }
-
-        @Override
-        public List<MergedRegion> getMergedRegions() {
-            return Collections.unmodifiableList(mergedRegions);
-        }
-
-        @Override
-        public List<RowGroup> getRowGroups() {
-            return Collections.unmodifiableList(rowGroups);
-        }
-    }
 }

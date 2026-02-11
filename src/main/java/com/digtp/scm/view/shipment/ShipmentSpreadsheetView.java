@@ -20,13 +20,11 @@ import com.digtp.scm.portbalance.layout.PortBalanceCellBinding;
 import com.digtp.scm.portbalance.layout.PortBalanceCellContext;
 import com.digtp.scm.portbalance.query.PortBalanceQueryService;
 import com.digtp.scm.portbalance.query.VesselLoadingOutRecord;
-import com.digtp.scm.portbalance.ui.PortBalanceSpreadsheetController;
 import com.digtp.scm.view.portbalance.PortBalanceCellDetailsView;
 import com.digtp.scm.view.main.MainView;
-import com.hexstyle.jmixspreadsheet.api.DefaultSpreadsheetTableModel;
 import com.hexstyle.jmixspreadsheet.api.SpreadsheetInteractionHandler;
-import com.hexstyle.jmixspreadsheet.api.SpreadsheetTableModel;
 import com.hexstyle.jmixspreadsheet.internal.InteractionContextImpl;
+import com.hexstyle.jmixspreadsheet.ui.component.SpreadsheetComponentConfig;
 import com.hexstyle.jmixspreadsheet.ui.component.SpreadsheetComponent;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.router.Route;
@@ -51,7 +49,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 @Route(value = "shipments-spreadsheet", layout = MainView.class)
@@ -82,7 +79,6 @@ public class ShipmentSpreadsheetView extends StandardView {
     private MultiSelectComboBox<PortBalanceMetric> metricsSelector;
 
     private final PortBalanceLayoutBuilder layoutBuilder = new PortBalanceLayoutBuilder();
-    private PortBalanceSpreadsheetController controller;
     private boolean adjustingMetrics;
     private final Set<PropertyFilter<?>> boundFilters = new HashSet<>();
     private static final List<PortBalanceMetric> METRIC_ORDER = List.of(
@@ -99,20 +95,31 @@ public class ShipmentSpreadsheetView extends StandardView {
     }
 
     private void setupSpreadsheet() {
-        SpreadsheetInteractionHandler<PortBalanceCell> interactionHandler = createInteractionHandler();
-        SpreadsheetTableModel<PortBalanceCell> model = new DefaultSpreadsheetTableModel<>(
-                PortBalanceCell.class,
-                List.of(),
-                null,
-                null,
-                null,
-                Optional.empty(),
-                interactionHandler
-        );
+        SpreadsheetComponentConfig<PortBalanceCell> config = buildSpreadsheetConfig();
+        shipmentsSpreadsheet.configure(config);
+    }
 
-        controller = new PortBalanceSpreadsheetController(this::buildPortBalanceTable, layoutBuilder);
-        controller.bind(model, new Object());
-        shipmentsSpreadsheet.setController(controller);
+    private SpreadsheetComponentConfig<PortBalanceCell> buildSpreadsheetConfig() {
+        return SpreadsheetComponentConfig.forLayout(
+                        PortBalanceCell.class,
+                        this::buildPortBalanceLayout
+                )
+                .withInteractionHandler(createInteractionHandler())
+                .withReadOnly(true)
+                .withNavigationGridVisible(false)
+                .withCellKeyProvider(this::portBalanceCellKey)
+                .addHeaderWidthDelta("Laycan", 100);
+    }
+
+    private com.hexstyle.jmixspreadsheet.layout.SpreadsheetLayout<PortBalanceCell> buildPortBalanceLayout() {
+        return layoutBuilder.buildLayout(buildPortBalanceTable());
+    }
+
+    private Object portBalanceCellKey(PortBalanceCell cell) {
+        if (cell == null) {
+            return null;
+        }
+        return cell.getRowId() + "|" + String.valueOf(cell.getColumnKey());
     }
 
     private SpreadsheetInteractionHandler<PortBalanceCell> createInteractionHandler() {
@@ -300,8 +307,8 @@ public class ShipmentSpreadsheetView extends StandardView {
     }
 
     private void reloadPortBalance() {
-        if (controller != null) {
-            controller.reload();
+        if (shipmentsSpreadsheet != null) {
+            shipmentsSpreadsheet.reload();
         }
     }
 

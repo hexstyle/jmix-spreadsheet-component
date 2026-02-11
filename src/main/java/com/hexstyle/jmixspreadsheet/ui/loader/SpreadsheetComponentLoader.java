@@ -31,6 +31,12 @@ public class SpreadsheetComponentLoader extends AbstractComponentLoader<Spreadsh
         loadBoolean(element, "read-only", resultComponent::setReadOnly);
         loadBoolean(element, "navigationGridVisible", resultComponent::setNavigationGridVisible);
         loadBoolean(element, "navigation-grid-visible", resultComponent::setNavigationGridVisible);
+        loadBoolean(element, "autoRefreshViewport", resultComponent::setAutoRefreshViewport);
+        loadBoolean(element, "auto-refresh-viewport", resultComponent::setAutoRefreshViewport);
+        loadBoolean(element, "autoResize", resultComponent::setAutoResize);
+        loadBoolean(element, "auto-resize", resultComponent::setAutoResize);
+        loadString(element, "headerStyle", resultComponent::setHeaderStyle);
+        loadString(element, "header-style", resultComponent::setHeaderStyle);
         
         // Note: Controller binding is done in Java code (e.g., in view's InitEvent handler)
         // The dataContainer attribute is available via element.attributeValue("dataContainer")
