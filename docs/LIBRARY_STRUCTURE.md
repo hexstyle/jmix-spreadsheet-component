@@ -6,7 +6,7 @@ This document describes the structure of the Jmix Spreadsheet component library.
 
 The core spreadsheet library code is located in:
 ```
-com.company.jmixspreadsheet.spreadsheet.*
+com.hexstyle.jmixspreadsheet.spreadsheet.*
 ```
 
 This package contains all the reusable spreadsheet component code that can be extracted as a separate Jmix library.
@@ -15,22 +15,22 @@ This package contains all the reusable spreadsheet component code that can be ex
 
 ### Library Code (Extractable)
 
-- **`com.company.jmixspreadsheet.spreadsheet.api`** - Public API interfaces and classes
-- **`com.company.jmixspreadsheet.spreadsheet.datasource`** - Data source adapters
-- **`com.company.jmixspreadsheet.spreadsheet.layout`** - Layout engine and builders
-- **`com.company.jmixspreadsheet.spreadsheet.index`** - Layout indexing
-- **`com.company.jmixspreadsheet.spreadsheet.render`** - Rendering components
-- **`com.company.jmixspreadsheet.spreadsheet.edit`** - Cell editing logic
-- **`com.company.jmixspreadsheet.spreadsheet.diff`** - Change detection and delta computation
-- **`com.company.jmixspreadsheet.spreadsheet.ui`** - UI components and factories
-- **`com.company.jmixspreadsheet.spreadsheet.internal`** - Internal implementation (not part of public API)
+- **`com.hexstyle.jmixspreadsheet.spreadsheet.api`** - Public API interfaces and classes
+- **`com.hexstyle.jmixspreadsheet.spreadsheet.datasource`** - Data source adapters
+- **`com.hexstyle.jmixspreadsheet.spreadsheet.layout`** - Layout engine and builders
+- **`com.hexstyle.jmixspreadsheet.spreadsheet.index`** - Layout indexing
+- **`com.hexstyle.jmixspreadsheet.spreadsheet.render`** - Rendering components
+- **`com.hexstyle.jmixspreadsheet.spreadsheet.edit`** - Cell editing logic
+- **`com.hexstyle.jmixspreadsheet.spreadsheet.diff`** - Change detection and delta computation
+- **`com.hexstyle.jmixspreadsheet.spreadsheet.ui`** - UI components and factories
+- **`com.hexstyle.jmixspreadsheet.spreadsheet.internal`** - Internal implementation (not part of public API)
 
 ### Application/Demo Code (Not Part of Library)
 
-- **`com.company.jmixspreadsheet.entity.*`** - Application entities (Shipment, Plant, Product, etc.)
-- **`com.company.jmixspreadsheet.view.*`** - Application views
-- **`com.company.jmixspreadsheet.service.*`** - Application services
-- **`com.company.jmixspreadsheet.security.*`** - Application security configuration
+- **`com.hexstyle.jmixspreadsheet.entity.*`** - Application entities (Shipment, Plant, Product, etc.)
+- **`com.hexstyle.jmixspreadsheet.view.*`** - Application views
+- **`com.hexstyle.jmixspreadsheet.service.*`** - Application services
+- **`com.hexstyle.jmixspreadsheet.security.*`** - Application security configuration
 
 ## Spring Configuration
 
@@ -57,14 +57,14 @@ To use the spreadsheet library in a Jmix application:
 3. Use `SpreadsheetComponent` in XML view descriptors
 4. Implement `PivotEditStrategy` for custom pivot editing logic
 
-See the application code in `com.company.jmixspreadsheet.view.shipment.ShipmentSpreadsheetView` for usage examples.
+See the application code in `com.hexstyle.jmixspreadsheet.view.shipment.ShipmentSpreadsheetView` for usage examples.
 
 ## Extracting as a Separate Library
 
 To extract this code as a separate Jmix library:
 
 1. Create a new Gradle module/project
-2. Copy all files from `com.company.jmixspreadsheet.spreadsheet.*` packages
+2. Copy all files from `com.hexstyle.jmixspreadsheet.spreadsheet.*` packages
 3. Update `build.gradle` to build as a library (JAR) instead of application
 4. Remove application-specific dependencies (if any)
 5. Ensure Spring auto-configuration is properly set up

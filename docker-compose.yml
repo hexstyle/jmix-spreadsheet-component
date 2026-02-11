@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: jmix-spreadsheet-postgres
+    environment:
+      POSTGRES_DB: jmixspreadsheet
+      POSTGRES_USER: jmix
+      POSTGRES_PASSWORD: jmix
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jmix -d jmixspreadsheet"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:

@@ -71,15 +71,15 @@ dependencies {
 Copy the spreadsheet library code from `src/main/java/com/company/jmixspreadsheet/spreadsheet/` to your project, or extract it as a separate library module.
 
 **Required packages:**
-- `com.company.jmixspreadsheet.spreadsheet.api`
-- `com.company.jmixspreadsheet.spreadsheet.datasource`
-- `com.company.jmixspreadsheet.spreadsheet.layout`
-- `com.company.jmixspreadsheet.spreadsheet.index`
-- `com.company.jmixspreadsheet.spreadsheet.render`
-- `com.company.jmixspreadsheet.spreadsheet.edit`
-- `com.company.jmixspreadsheet.spreadsheet.diff`
-- `com.company.jmixspreadsheet.spreadsheet.ui`
-- `com.company.jmixspreadsheet.spreadsheet.internal`
+- `com.hexstyle.jmixspreadsheet.spreadsheet.api`
+- `com.hexstyle.jmixspreadsheet.spreadsheet.datasource`
+- `com.hexstyle.jmixspreadsheet.spreadsheet.layout`
+- `com.hexstyle.jmixspreadsheet.spreadsheet.index`
+- `com.hexstyle.jmixspreadsheet.spreadsheet.render`
+- `com.hexstyle.jmixspreadsheet.spreadsheet.edit`
+- `com.hexstyle.jmixspreadsheet.spreadsheet.diff`
+- `com.hexstyle.jmixspreadsheet.spreadsheet.ui`
+- `com.hexstyle.jmixspreadsheet.spreadsheet.internal`
 
 ### Step 3: Configure Spring
 
@@ -94,7 +94,7 @@ Create a view XML file (e.g., `my-spreadsheet-view.xml`):
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <view xmlns="http://jmix.io/schema/flowui/view"
-      xmlns:spreadsheet="http://com.company/spreadsheet.xsd">
+      xmlns:spreadsheet="http://com.hexstyle/spreadsheet.xsd">
     <layout>
         <spreadsheet:spreadsheet id="mySpreadsheet" 
                                  width="100%" 
@@ -389,7 +389,7 @@ For detailed architecture documentation, see [docs/spreadsheet-architecture.md](
 
 ## API Documentation
 
-The main public API classes are in the `com.company.jmixspreadsheet.spreadsheet.api` package:
+The main public API classes are in the `com.hexstyle.jmixspreadsheet.spreadsheet.api` package:
 
 - `SpreadsheetController<E, DC>` - Controller interface
 - `SpreadsheetTableModel<E>` - Table model interface

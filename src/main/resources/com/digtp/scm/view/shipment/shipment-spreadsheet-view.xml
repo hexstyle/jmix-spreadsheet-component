@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      title="msg://ShipmentSpreadsheetView.title"
+      xmlns:spreadsheet="http://com.company/spreadsheet.xsd"
+      focusComponent="shipmentsSpreadsheet">
+    <data>
+        <collection id="movementsDc"
+                    class="com.digtp.scm.entity.Movement">
+            <fetchPlan extends="_base"/>
+            <loader id="movementsDl" readOnly="true">
+                <query>
+                    <![CDATA[select e from scm_Movement e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <facets>
+        <dataLoadCoordinator auto="false"/>
+        <urlQueryParameters>
+            <genericFilter component="genericFilter"/>
+        </urlQueryParameters>
+    </facets>
+    <layout>
+        <genericFilter id="genericFilter"
+                       dataLoader="movementsDl">
+            <properties include="date,track,warehouse.terminal,product,originPlant,productPackage"/>
+            <configurations>
+                <configuration id="defaultConfiguration" name="Port Balance Filter"
+                               default="true">
+                    <propertyFilter id="dateFromFilter" property="date" operation="GREATER_OR_EQUAL"
+                                    operationEditable="false"/>
+                    <propertyFilter id="dateToFilter" property="date" operation="LESS_OR_EQUAL"
+                                    operationEditable="false"/>
+                    <propertyFilter id="trackFilter" property="track" operation="EQUAL"
+                                    operationEditable="false"/>
+                    <propertyFilter id="terminalFilter" property="warehouse.terminal" operation="EQUAL"
+                                    operationEditable="false"/>
+                    <propertyFilter id="productFilter" property="product" operation="EQUAL"
+                                    operationEditable="false"/>
+                    <propertyFilter id="plantFilter" property="originPlant" operation="EQUAL"
+                                    operationEditable="false"/>
+                    <propertyFilter id="productPackageFilter" property="productPackage" operation="EQUAL"
+                                    operationEditable="false"/>
+                </configuration>
+            </configurations>
+        </genericFilter>
+        <hbox id="controlsPanel" classNames="buttons-panel">
+            <multiSelectComboBox id="metricsSelector"
+                                 label="Columns"
+                                 width="20em"/>
+        </hbox>
+        <spreadsheet:spreadsheet id="shipmentsSpreadsheet"
+                     width="100%"
+                     height="100%"
+                     minHeight="calc(20em + 100px)"/>
+    </layout>
+</view>

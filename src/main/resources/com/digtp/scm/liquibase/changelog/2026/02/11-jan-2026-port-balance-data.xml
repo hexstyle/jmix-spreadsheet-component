@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1" author="codex">
+        <insert tableName="SCM_COUNTRY">
+            <column name="ID" value="11111111-1111-1111-1111-111111111111"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="NAME" value="PB26 Testland"/>
+            <column name="ALPHA_2_CODE" value="QZ"/>
+        </insert>
+
+        <insert tableName="SCM_PORT">
+            <column name="ID" value="22222222-2222-2222-2222-222222222222"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="CODE" value="PB2601"/>
+            <column name="COUNTRY_ID" value="11111111-1111-1111-1111-111111111111"/>
+            <column name="NAME" value="PB26 Port"/>
+            <column name="IS_LOADING_PORT" valueBoolean="false"/>
+        </insert>
+
+        <insert tableName="SCM_TERMINAL">
+            <column name="ID" value="33333333-3333-3333-3333-333333333333"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="CODE" value="PB26T1"/>
+            <column name="NAME" value="PB26 Terminal"/>
+            <column name="PORT_ID" value="22222222-2222-2222-2222-222222222222"/>
+        </insert>
+
+        <insert tableName="SCM_WAREHOUSE">
+            <column name="ID" value="44444444-4444-4444-4444-444444444444"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="NAME" value="PB26 Warehouse"/>
+            <column name="IS_ARCHIVED" valueBoolean="false"/>
+            <column name="DTYPE" value="scm_WarehouseTerminal"/>
+        </insert>
+
+        <insert tableName="SCM_WAREHOUSE_TERMINAL">
+            <column name="ID" value="44444444-4444-4444-4444-444444444444"/>
+            <column name="TERMINAL_ID" value="33333333-3333-3333-3333-333333333333"/>
+        </insert>
+
+        <insert tableName="SCM_PLANT">
+            <column name="ID" value="55555555-5555-5555-5555-555555555555"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="NAME" value="PB26 Plant"/>
+            <column name="CODE" value="PB260"/>
+        </insert>
+
+        <insert tableName="SCM_PRODUCT">
+            <column name="ID" value="66666666-6666-6666-6666-666666666666"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="NAME" value="PB26 Product"/>
+        </insert>
+
+        <insert tableName="SCM_PRODUCT_PACKAGE">
+            <column name="ID" value="77777777-7777-7777-7777-777777777777"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="CODE" value="PB26PK"/>
+            <column name="NAME" value="PB26 Package"/>
+        </insert>
+
+        <insert tableName="SCM_TRANSPORT_CATEGORY">
+            <column name="ID" value="88888888-8888-8888-8888-888888888888"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="NAME" value="PB26 Sea"/>
+            <column name="TRANSPORT_MODE" valueNumeric="20"/>
+        </insert>
+
+        <insert tableName="SCM_TRANSPORT_TYPE">
+            <column name="ID" value="99999999-9999-9999-9999-999999999999"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="NAME" value="PB26 Type"/>
+            <column name="TRANSPORT_CATEGORY_ID" value="88888888-8888-8888-8888-888888888888"/>
+        </insert>
+
+        <insert tableName="SCM_TRACK">
+            <column name="ID" value="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="NAME" value="PB26 Track"/>
+            <column name="TRACK_TYPE" valueNumeric="10"/>
+            <column name="IS_ACTIVE" valueBoolean="true"/>
+            <column name="IS_FROZEN" valueBoolean="false"/>
+        </insert>
+
+        <insert tableName="SCM_SHIPPING_COMBINATION">
+            <column name="ID" value="bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"/>
+            <column name="PLANT_ID" value="55555555-5555-5555-5555-555555555555"/>
+            <column name="WAREHOUSE_ID" value="44444444-4444-4444-4444-444444444444"/>
+            <column name="PRODUCT_ID" value="66666666-6666-6666-6666-666666666666"/>
+            <column name="PRODUCT_PACKAGE_ID" value="77777777-7777-7777-7777-777777777777"/>
+            <column name="TRANSPORT_TYPE_ID" value="99999999-9999-9999-9999-999999999999"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="IS_ARCHIVED" valueBoolean="false"/>
+        </insert>
+
+        <insert tableName="SCM_INCOTERMS">
+            <column name="ID" value="cccccccc-cccc-cccc-cccc-cccccccccccc"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="NAME" value="PB26 FOB"/>
+            <column name="CODE" value="FOB"/>
+        </insert>
+
+        <insert tableName="SCM_TOLERANCE">
+            <column name="ID" value="dddddddd-dddd-dddd-dddd-dddddddddddd"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="NAME" value="PB26 Tol"/>
+            <column name="MIN_" valueNumeric="1"/>
+            <column name="MAX_" valueNumeric="10"/>
+        </insert>
+
+        <insert tableName="SCM_PREPARTY">
+            <column name="ID" value="eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"/>
+            <column name="PRODUCT_ID" value="66666666-6666-6666-6666-666666666666"/>
+            <column name="PRODUCT_PACKAGE_ID" value="77777777-7777-7777-7777-777777777777"/>
+            <column name="ORIGIN_PLANT_ID" value="55555555-5555-5555-5555-555555555555"/>
+            <column name="SHIPMENT_START_DATE" value="2026-01-01"/>
+            <column name="SHIPMENT_END_DATE" value="2026-01-02"/>
+            <column name="LOADING_TERMINAL_ID" value="33333333-3333-3333-3333-333333333333"/>
+            <column name="UNLOADING_PORT_ID" value="22222222-2222-2222-2222-222222222222"/>
+            <column name="INCOTERMS_ID" value="cccccccc-cccc-cccc-cccc-cccccccccccc"/>
+            <column name="TOLERANCE_ID" value="dddddddd-dddd-dddd-dddd-dddddddddddd"/>
+            <column name="SALES_CHANNEL" valueNumeric="10"/>
+            <column name="TRANSACTION_STATUS" valueNumeric="10"/>
+            <column name="VOLUME" valueNumeric="3333"/>
+            <column name="IS_ARCHIVED" valueBoolean="false"/>
+            <column name="VERSION" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="SCM_VESSEL_LOAD">
+            <column name="ID" value="f1f1f1f1-f1f1-f1f1-f1f1-f1f1f1f1f1f1"/>
+            <column name="TRACK_ID" value="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"/>
+            <column name="TBN_NUM" value="TBN-0101"/>
+            <column name="TERMINAL_ID" value="33333333-3333-3333-3333-333333333333"/>
+            <column name="TRANSPORT_TYPE_ID" value="99999999-9999-9999-9999-999999999999"/>
+            <column name="VESSEL_NAME" value="Vessel Jan"/>
+            <column name="PLANNING_LOADING_START_DATE" value="2026-01-06"/>
+            <column name="PLANNING_LOADING_END_DATE" value="2026-01-07"/>
+            <column name="PLANNING_LAYCAN_START_DATE" value="2026-01-06"/>
+            <column name="PLANNING_LAYCAN_END_DATE" value="2026-01-08"/>
+            <column name="VESSEL_LOAD_STATUS" valueNumeric="10"/>
+            <column name="VERSION" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="SCM_VESSEL_LOAD_ITEM">
+            <column name="ID" value="f2f2f2f2-f2f2-f2f2-f2f2-f2f2f2f2f2f2"/>
+            <column name="VESSEL_LOAD_ID" value="f1f1f1f1-f1f1-f1f1-f1f1-f1f1f1f1f1f1"/>
+            <column name="PRE_PARTY_ID" value="eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"/>
+            <column name="PORT_ID" value="22222222-2222-2222-2222-222222222222"/>
+            <column name="INCOTERMS_ID" value="cccccccc-cccc-cccc-cccc-cccccccccccc"/>
+            <column name="CLIENT" value="Client Jan"/>
+            <column name="VOLUME" valueNumeric="3333"/>
+            <column name="TOLERANCE_ID" value="dddddddd-dddd-dddd-dddd-dddddddddddd"/>
+            <column name="VERSION" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="SCM_REASON">
+            <column name="ID" value="10101010-1010-1010-1010-101010101010"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="WAREHOUSE_ID" value="44444444-4444-4444-4444-444444444444"/>
+            <column name="PRODUCT_ID" value="66666666-6666-6666-6666-666666666666"/>
+            <column name="PRODUCT_PACKAGE_ID" value="77777777-7777-7777-7777-777777777777"/>
+            <column name="ORIGIN_PLANT_ID" value="55555555-5555-5555-5555-555555555555"/>
+            <column name="DATE_" value="2026-01-02"/>
+            <column name="VOLUME" valueNumeric="1111"/>
+            <column name="TRACK_ID" value="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"/>
+            <column name="LEADTIME" valueNumeric="2"/>
+            <column name="TRANSPORT_TYPE_ID" value="99999999-9999-9999-9999-999999999999"/>
+            <column name="DTYPE" value="PlantShipmentReason"/>
+        </insert>
+
+        <insert tableName="SCM_REASON">
+            <column name="ID" value="20202020-2020-2020-2020-202020202020"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="WAREHOUSE_ID" value="44444444-4444-4444-4444-444444444444"/>
+            <column name="PRODUCT_ID" value="66666666-6666-6666-6666-666666666666"/>
+            <column name="PRODUCT_PACKAGE_ID" value="77777777-7777-7777-7777-777777777777"/>
+            <column name="ORIGIN_PLANT_ID" value="55555555-5555-5555-5555-555555555555"/>
+            <column name="DATE_" value="2026-01-05"/>
+            <column name="VOLUME" valueNumeric="2222"/>
+            <column name="TRACK_ID" value="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"/>
+            <column name="LEADTIME" valueNumeric="1"/>
+            <column name="TRANSPORT_TYPE_ID" value="99999999-9999-9999-9999-999999999999"/>
+            <column name="DTYPE" value="PlantShipmentReason"/>
+        </insert>
+
+        <insert tableName="SCM_REASON">
+            <column name="ID" value="50505050-5050-5050-5050-505050505050"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="WAREHOUSE_ID" value="44444444-4444-4444-4444-444444444444"/>
+            <column name="PRODUCT_ID" value="66666666-6666-6666-6666-666666666666"/>
+            <column name="PRODUCT_PACKAGE_ID" value="77777777-7777-7777-7777-777777777777"/>
+            <column name="ORIGIN_PLANT_ID" value="55555555-5555-5555-5555-555555555555"/>
+            <column name="DATE_" value="2026-01-06"/>
+            <column name="VOLUME" valueNumeric="3333"/>
+            <column name="TRACK_ID" value="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"/>
+            <column name="TRANSPORT_TYPE_ID" value="99999999-9999-9999-9999-999999999999"/>
+            <column name="VESSEL_LOAD_ITEM_ID" value="f2f2f2f2-f2f2-f2f2-f2f2-f2f2f2f2f2f2"/>
+            <column name="DTYPE" value="VesselLoadingReason"/>
+        </insert>
+
+        <insert tableName="SCM_MOVEMENT">
+            <column name="ID" value="30303030-3030-3030-3030-303030303030"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="WAREHOUSE_ID" value="44444444-4444-4444-4444-444444444444"/>
+            <column name="PRODUCT_ID" value="66666666-6666-6666-6666-666666666666"/>
+            <column name="PRODUCT_PACKAGE_ID" value="77777777-7777-7777-7777-777777777777"/>
+            <column name="ORIGIN_PLANT_ID" value="55555555-5555-5555-5555-555555555555"/>
+            <column name="REASON_ID" value="10101010-1010-1010-1010-101010101010"/>
+            <column name="DATE_" value="2026-01-04"/>
+            <column name="VOLUME" valueNumeric="1111"/>
+            <column name="TRACK_ID" value="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"/>
+            <column name="IS_FACT" valueBoolean="false"/>
+        </insert>
+
+        <insert tableName="SCM_MOVEMENT">
+            <column name="ID" value="40404040-4040-4040-4040-404040404040"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="WAREHOUSE_ID" value="44444444-4444-4444-4444-444444444444"/>
+            <column name="PRODUCT_ID" value="66666666-6666-6666-6666-666666666666"/>
+            <column name="PRODUCT_PACKAGE_ID" value="77777777-7777-7777-7777-777777777777"/>
+            <column name="ORIGIN_PLANT_ID" value="55555555-5555-5555-5555-555555555555"/>
+            <column name="REASON_ID" value="20202020-2020-2020-2020-202020202020"/>
+            <column name="DATE_" value="2026-01-06"/>
+            <column name="VOLUME" valueNumeric="2222"/>
+            <column name="TRACK_ID" value="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"/>
+            <column name="IS_FACT" valueBoolean="false"/>
+        </insert>
+
+        <insert tableName="SCM_MOVEMENT">
+            <column name="ID" value="60606060-6060-6060-6060-606060606060"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="WAREHOUSE_ID" value="44444444-4444-4444-4444-444444444444"/>
+            <column name="PRODUCT_ID" value="66666666-6666-6666-6666-666666666666"/>
+            <column name="PRODUCT_PACKAGE_ID" value="77777777-7777-7777-7777-777777777777"/>
+            <column name="ORIGIN_PLANT_ID" value="55555555-5555-5555-5555-555555555555"/>
+            <column name="REASON_ID" value="50505050-5050-5050-5050-505050505050"/>
+            <column name="DATE_" value="2026-01-06"/>
+            <column name="VOLUME" valueNumeric="3333"/>
+            <column name="TRACK_ID" value="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"/>
+            <column name="IS_FACT" valueBoolean="false"/>
+        </insert>
+
+    </changeSet>
+    <changeSet id="2" author="codex">
+        <insert tableName="SCM_PRODUCT">
+            <column name="ID" value="12121212-1212-1212-1212-121212121212"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="NAME" value="PB26 Product B"/>
+        </insert>
+
+        <insert tableName="SCM_PRODUCT_PACKAGE">
+            <column name="ID" value="13131313-1313-1313-1313-131313131313"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="CODE" value="PB26PKB"/>
+            <column name="NAME" value="PB26 Package B"/>
+        </insert>
+
+        <insert tableName="SCM_SHIPPING_COMBINATION">
+            <column name="ID" value="14141414-1414-1414-1414-141414141414"/>
+            <column name="PLANT_ID" value="55555555-5555-5555-5555-555555555555"/>
+            <column name="WAREHOUSE_ID" value="44444444-4444-4444-4444-444444444444"/>
+            <column name="PRODUCT_ID" value="12121212-1212-1212-1212-121212121212"/>
+            <column name="PRODUCT_PACKAGE_ID" value="13131313-1313-1313-1313-131313131313"/>
+            <column name="TRANSPORT_TYPE_ID" value="99999999-9999-9999-9999-999999999999"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="IS_ARCHIVED" valueBoolean="false"/>
+        </insert>
+
+        <insert tableName="SCM_PREPARTY">
+            <column name="ID" value="15151515-1515-1515-1515-151515151515"/>
+            <column name="PRODUCT_ID" value="12121212-1212-1212-1212-121212121212"/>
+            <column name="PRODUCT_PACKAGE_ID" value="13131313-1313-1313-1313-131313131313"/>
+            <column name="ORIGIN_PLANT_ID" value="55555555-5555-5555-5555-555555555555"/>
+            <column name="SHIPMENT_START_DATE" value="2026-01-01"/>
+            <column name="SHIPMENT_END_DATE" value="2026-01-02"/>
+            <column name="LOADING_TERMINAL_ID" value="33333333-3333-3333-3333-333333333333"/>
+            <column name="UNLOADING_PORT_ID" value="22222222-2222-2222-2222-222222222222"/>
+            <column name="INCOTERMS_ID" value="cccccccc-cccc-cccc-cccc-cccccccccccc"/>
+            <column name="TOLERANCE_ID" value="dddddddd-dddd-dddd-dddd-dddddddddddd"/>
+            <column name="SALES_CHANNEL" valueNumeric="10"/>
+            <column name="TRANSACTION_STATUS" valueNumeric="10"/>
+            <column name="VOLUME" valueNumeric="3333"/>
+            <column name="IS_ARCHIVED" valueBoolean="false"/>
+            <column name="VERSION" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="SCM_VESSEL_LOAD">
+            <column name="ID" value="f3f3f3f3-f3f3-f3f3-f3f3-f3f3f3f3f3f3"/>
+            <column name="TRACK_ID" value="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"/>
+            <column name="TBN_NUM" value="TBN-0107"/>
+            <column name="TERMINAL_ID" value="33333333-3333-3333-3333-333333333333"/>
+            <column name="TRANSPORT_TYPE_ID" value="99999999-9999-9999-9999-999999999999"/>
+            <column name="VESSEL_NAME" value="Vessel Jan"/>
+            <column name="PLANNING_LOADING_START_DATE" value="2026-01-07"/>
+            <column name="PLANNING_LOADING_END_DATE" value="2026-01-08"/>
+            <column name="PLANNING_LAYCAN_START_DATE" value="2026-01-07"/>
+            <column name="PLANNING_LAYCAN_END_DATE" value="2026-01-08"/>
+            <column name="VESSEL_LOAD_STATUS" valueNumeric="10"/>
+            <column name="VERSION" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="SCM_VESSEL_LOAD">
+            <column name="ID" value="f5f5f5f5-f5f5-f5f5-f5f5-f5f5f5f5f5f5"/>
+            <column name="TRACK_ID" value="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"/>
+            <column name="TBN_NUM" value="TBN-0109A"/>
+            <column name="TERMINAL_ID" value="33333333-3333-3333-3333-333333333333"/>
+            <column name="TRANSPORT_TYPE_ID" value="99999999-9999-9999-9999-999999999999"/>
+            <column name="VESSEL_NAME" value="Vessel Jan"/>
+            <column name="PLANNING_LOADING_START_DATE" value="2026-01-09"/>
+            <column name="PLANNING_LOADING_END_DATE" value="2026-01-10"/>
+            <column name="PLANNING_LAYCAN_START_DATE" value="2026-01-09"/>
+            <column name="PLANNING_LAYCAN_END_DATE" value="2026-01-11"/>
+            <column name="VESSEL_LOAD_STATUS" valueNumeric="10"/>
+            <column name="VERSION" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="SCM_VESSEL_LOAD">
+            <column name="ID" value="f7f7f7f7-f7f7-f7f7-f7f7-f7f7f7f7f7f7"/>
+            <column name="TRACK_ID" value="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"/>
+            <column name="TBN_NUM" value="TBN-0109B"/>
+            <column name="TERMINAL_ID" value="33333333-3333-3333-3333-333333333333"/>
+            <column name="TRANSPORT_TYPE_ID" value="99999999-9999-9999-9999-999999999999"/>
+            <column name="VESSEL_NAME" value="Vessel Jan"/>
+            <column name="PLANNING_LOADING_START_DATE" value="2026-01-09"/>
+            <column name="PLANNING_LOADING_END_DATE" value="2026-01-10"/>
+            <column name="PLANNING_LAYCAN_START_DATE" value="2026-01-09"/>
+            <column name="PLANNING_LAYCAN_END_DATE" value="2026-01-11"/>
+            <column name="VESSEL_LOAD_STATUS" valueNumeric="10"/>
+            <column name="VERSION" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="SCM_VESSEL_LOAD">
+            <column name="ID" value="f9f9f9f9-f9f9-f9f9-f9f9-f9f9f9f9f9f9"/>
+            <column name="TRACK_ID" value="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"/>
+            <column name="TBN_NUM" value="TBN-0109C"/>
+            <column name="TERMINAL_ID" value="33333333-3333-3333-3333-333333333333"/>
+            <column name="TRANSPORT_TYPE_ID" value="99999999-9999-9999-9999-999999999999"/>
+            <column name="VESSEL_NAME" value="Vessel Jan"/>
+            <column name="PLANNING_LOADING_START_DATE" value="2026-01-09"/>
+            <column name="PLANNING_LOADING_END_DATE" value="2026-01-10"/>
+            <column name="PLANNING_LAYCAN_START_DATE" value="2026-01-09"/>
+            <column name="PLANNING_LAYCAN_END_DATE" value="2026-01-11"/>
+            <column name="VESSEL_LOAD_STATUS" valueNumeric="10"/>
+            <column name="VERSION" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="SCM_VESSEL_LOAD_ITEM">
+            <column name="ID" value="f4f4f4f4-f4f4-f4f4-f4f4-f4f4f4f4f4f4"/>
+            <column name="VESSEL_LOAD_ID" value="f3f3f3f3-f3f3-f3f3-f3f3-f3f3f3f3f3f3"/>
+            <column name="PRE_PARTY_ID" value="eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"/>
+            <column name="PORT_ID" value="22222222-2222-2222-2222-222222222222"/>
+            <column name="INCOTERMS_ID" value="cccccccc-cccc-cccc-cccc-cccccccccccc"/>
+            <column name="CLIENT" value="Client Jan"/>
+            <column name="VOLUME" valueNumeric="500"/>
+            <column name="TOLERANCE_ID" value="dddddddd-dddd-dddd-dddd-dddddddddddd"/>
+            <column name="VERSION" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="SCM_VESSEL_LOAD_ITEM">
+            <column name="ID" value="f6f6f6f6-f6f6-f6f6-f6f6-f6f6f6f6f6f6"/>
+            <column name="VESSEL_LOAD_ID" value="f5f5f5f5-f5f5-f5f5-f5f5-f5f5f5f5f5f5"/>
+            <column name="PRE_PARTY_ID" value="eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"/>
+            <column name="PORT_ID" value="22222222-2222-2222-2222-222222222222"/>
+            <column name="INCOTERMS_ID" value="cccccccc-cccc-cccc-cccc-cccccccccccc"/>
+            <column name="CLIENT" value="Client Jan"/>
+            <column name="VOLUME" valueNumeric="400"/>
+            <column name="TOLERANCE_ID" value="dddddddd-dddd-dddd-dddd-dddddddddddd"/>
+            <column name="VERSION" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="SCM_VESSEL_LOAD_ITEM">
+            <column name="ID" value="f8f8f8f8-f8f8-f8f8-f8f8-f8f8f8f8f8f8"/>
+            <column name="VESSEL_LOAD_ID" value="f7f7f7f7-f7f7-f7f7-f7f7-f7f7f7f7f7f7"/>
+            <column name="PRE_PARTY_ID" value="eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"/>
+            <column name="PORT_ID" value="22222222-2222-2222-2222-222222222222"/>
+            <column name="INCOTERMS_ID" value="cccccccc-cccc-cccc-cccc-cccccccccccc"/>
+            <column name="CLIENT" value="Client Jan"/>
+            <column name="VOLUME" valueNumeric="600"/>
+            <column name="TOLERANCE_ID" value="dddddddd-dddd-dddd-dddd-dddddddddddd"/>
+            <column name="VERSION" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="SCM_VESSEL_LOAD_ITEM">
+            <column name="ID" value="fafafafa-fafa-fafa-fafa-fafafafafafa"/>
+            <column name="VESSEL_LOAD_ID" value="f9f9f9f9-f9f9-f9f9-f9f9-f9f9f9f9f9f9"/>
+            <column name="PRE_PARTY_ID" value="15151515-1515-1515-1515-151515151515"/>
+            <column name="PORT_ID" value="22222222-2222-2222-2222-222222222222"/>
+            <column name="INCOTERMS_ID" value="cccccccc-cccc-cccc-cccc-cccccccccccc"/>
+            <column name="CLIENT" value="Client Jan"/>
+            <column name="VOLUME" valueNumeric="700"/>
+            <column name="TOLERANCE_ID" value="dddddddd-dddd-dddd-dddd-dddddddddddd"/>
+            <column name="VERSION" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="SCM_REASON">
+            <column name="ID" value="70707070-7070-7070-7070-707070707070"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="WAREHOUSE_ID" value="44444444-4444-4444-4444-444444444444"/>
+            <column name="PRODUCT_ID" value="66666666-6666-6666-6666-666666666666"/>
+            <column name="PRODUCT_PACKAGE_ID" value="77777777-7777-7777-7777-777777777777"/>
+            <column name="ORIGIN_PLANT_ID" value="55555555-5555-5555-5555-555555555555"/>
+            <column name="DATE_" value="2026-01-07"/>
+            <column name="VOLUME" valueNumeric="500"/>
+            <column name="TRACK_ID" value="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"/>
+            <column name="TRANSPORT_TYPE_ID" value="99999999-9999-9999-9999-999999999999"/>
+            <column name="VESSEL_LOAD_ITEM_ID" value="f4f4f4f4-f4f4-f4f4-f4f4-f4f4f4f4f4f4"/>
+            <column name="DTYPE" value="VesselLoadingReason"/>
+        </insert>
+
+        <insert tableName="SCM_MOVEMENT">
+            <column name="ID" value="80808080-8080-8080-8080-808080808080"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="WAREHOUSE_ID" value="44444444-4444-4444-4444-444444444444"/>
+            <column name="PRODUCT_ID" value="66666666-6666-6666-6666-666666666666"/>
+            <column name="PRODUCT_PACKAGE_ID" value="77777777-7777-7777-7777-777777777777"/>
+            <column name="ORIGIN_PLANT_ID" value="55555555-5555-5555-5555-555555555555"/>
+            <column name="REASON_ID" value="70707070-7070-7070-7070-707070707070"/>
+            <column name="DATE_" value="2026-01-07"/>
+            <column name="VOLUME" valueNumeric="500"/>
+            <column name="TRACK_ID" value="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"/>
+            <column name="IS_FACT" valueBoolean="false"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="3" author="codex">
+        <insert tableName="SCM_TRACK">
+            <column name="ID" value="abababab-abab-abab-abab-abababababab"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="NAME" value="PB26 Track Plan"/>
+            <column name="TRACK_TYPE" valueNumeric="20"/>
+            <column name="IS_ACTIVE" valueBoolean="true"/>
+            <column name="IS_FROZEN" valueBoolean="false"/>
+        </insert>
+
+        <insert tableName="SCM_VESSEL">
+            <column name="ID" value="16161616-1616-1616-1616-161616161616"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="NAME" value="PB26 Vessel A"/>
+            <column name="IMO" value="1234567"/>
+            <column name="TRANSPORT_TYPE_ID" value="99999999-9999-9999-9999-999999999999"/>
+            <column name="IS_ARCHIVED" valueBoolean="false"/>
+        </insert>
+
+        <insert tableName="SCM_VESSEL">
+            <column name="ID" value="17171717-1717-1717-1717-171717171717"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="NAME" value="PB26 Vessel B"/>
+            <column name="IMO" value="7654321"/>
+            <column name="TRANSPORT_TYPE_ID" value="99999999-9999-9999-9999-999999999999"/>
+            <column name="IS_ARCHIVED" valueBoolean="false"/>
+        </insert>
+
+        <update tableName="SCM_VESSEL_LOAD">
+            <column name="VESSEL_NAME" value="PB26 Vessel A"/>
+            <column name="VESSEL_ID" value="16161616-1616-1616-1616-161616161616"/>
+            <where>ID='f5f5f5f5-f5f5-f5f5-f5f5-f5f5f5f5f5f5'</where>
+        </update>
+
+        <update tableName="SCM_VESSEL_LOAD">
+            <column name="VESSEL_NAME" value="PB26 Vessel B"/>
+            <column name="VESSEL_ID" value="17171717-1717-1717-1717-171717171717"/>
+            <where>ID='f7f7f7f7-f7f7-f7f7-f7f7-f7f7f7f7f7f7'</where>
+        </update>
+
+        <update tableName="SCM_VESSEL_LOAD">
+            <column name="VESSEL_NAME" value="PB26 Vessel A"/>
+            <column name="VESSEL_ID" value="16161616-1616-1616-1616-161616161616"/>
+            <column name="TRACK_ID" value="abababab-abab-abab-abab-abababababab"/>
+            <where>ID='f9f9f9f9-f9f9-f9f9-f9f9-f9f9f9f9f9f9'</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>

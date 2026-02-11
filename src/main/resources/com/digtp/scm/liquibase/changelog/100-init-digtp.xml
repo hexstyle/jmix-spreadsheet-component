@@ -1,0 +1,1561 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="codex" context="!cuba">
+        <createTable tableName="SCM_CORRECTION_TYPE">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+            </column>
+            <column name="NAME" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="COMMENT_" type="varchar(2000)">
+            </column>
+        </createTable>
+        <createTable tableName="SCM_COUNTRY">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+            </column>
+            <column name="NAME" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ALPHA_2_CODE" type="varchar(2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REGION_ID" type="${uuid.type}">
+            </column>
+        </createTable>
+        <createTable tableName="SCM_INCOTERMS">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+            </column>
+            <column name="NAME" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CODE" type="varchar(3)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SCM_LEADTIME">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="PLANT_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRODUCT_ID" type="${uuid.type}">
+            </column>
+            <column name="PRODUCT_PACKAGE_ID" type="${uuid.type}">
+            </column>
+            <column name="TERMINAL_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRANSPORT_TYPE_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CARGO_TYPE" type="int">
+            </column>
+            <column name="DATE_START" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATE_END" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DAYS" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SCM_MOVEMENT">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+            <column name="WAREHOUSE_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRODUCT_ID" type="${uuid.type}">
+            </column>
+            <column name="PRODUCT_PACKAGE_ID" type="${uuid.type}">
+            </column>
+            <column name="ORIGIN_PLANT_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REASON_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATE_" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VOLUME" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRACK_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_FACT" type="boolean">
+            </column>
+        </createTable>
+        <createTable tableName="SCM_PLANT">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+            </column>
+            <column name="NAME" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CODE" type="varchar(5)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SCM_PLANT_LOAD_CAPACITY">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="PLANT_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRODUCT_ID" type="${uuid.type}">
+            </column>
+            <column name="PRODUCT_PACKAGE_ID" type="${uuid.type}">
+            </column>
+            <column name="TRANSPORT_TYPE_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATE_START" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATE_END" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MAX_DAILY_VOLUME" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SCM_PORT">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+            </column>
+            <column name="CODE" type="varchar(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="COUNTRY_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="varchar(2000)">
+            </column>
+            <column name="IS_LOADING_PORT" type="boolean">
+            </column>
+        </createTable>
+        <createTable tableName="SCM_PPIO_MONTH">
+            <column name="ID" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+            </column>
+            <column name="NAME" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FIRST_DATE" type="date">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SCM_PREPARTY">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="EXTERNAL_ID" type="varchar(50)">
+            </column>
+            <column name="PRODUCT_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRODUCT_NORMAL_ID" type="${uuid.type}">
+            </column>
+            <column name="PRODUCT_PACKAGE_ID" type="${uuid.type}">
+            </column>
+            <column name="ORIGIN_PLANT_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SHIPMENT_START_DATE" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SHIPMENT_END_DATE" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LOADING_TERMINAL_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UNLOADING_PORT_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INCOTERMS_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TOLERANCE_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SALES_CHANNEL" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRANSACTION_STATUS" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VOLUME" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CLIENT" type="varchar(200)">
+            </column>
+            <column name="COMMENT_" type="varchar(255)">
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+        </createTable>
+        <createTable tableName="SCM_PRODUCT">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+            </column>
+            <column name="NAME" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRODUCT_NORMAL_ID" type="${uuid.type}">
+            </column>
+        </createTable>
+        <createTable tableName="SCM_PRODUCT_GROUP_FIVE">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+            </column>
+            <column name="NAME" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SCM_PRODUCT_NORMAL">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+            </column>
+            <column name="NAME" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRODUCT_GROUP_FIVE_ID" type="${uuid.type}">
+            </column>
+        </createTable>
+        <createTable tableName="SCM_PRODUCT_PACKAGE">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+            </column>
+            <column name="CODE" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SCM_REGION">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+            </column>
+            <column name="NAME" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SHIPMENT">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DAY_" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PLANT_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRODUCT_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VESSEL_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALUE_" type="numeric(19,2)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SHIPMENT_VIEW">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DAY_" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PLANT_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRODUCT_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VESSEL_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALUE_" type="numeric(19,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CUMULATIVE_SUM" type="numeric(19,2)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SCM_SHIPPING_COMBINATION">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="PLANT_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="WAREHOUSE_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRODUCT_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRODUCT_PACKAGE_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRANSPORT_TYPE_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+        </createTable>
+        <createTable tableName="SCM_STOCK">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+            <column name="WAREHOUSE_ID" type="${uuid.type}">
+            </column>
+            <column name="PRODUCT_ID" type="${uuid.type}">
+            </column>
+            <column name="PRODUCT_PACKAGE_ID" type="${uuid.type}">
+            </column>
+            <column name="ORIGIN_PLANT_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATE_" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VOLUME" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRACK_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SCM_TERMINAL">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+            </column>
+            <column name="CODE" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PORT_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SCM_TERMINAL_LOAD_CAPACITY">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="PRODUCT_ID" type="${uuid.type}">
+            </column>
+            <column name="PRODUCT_PACKAGE_ID" type="${uuid.type}">
+            </column>
+            <column name="TERMINAL_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATE_START" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATE_END" type="date">
+            </column>
+            <column name="TECHNOLOGY_SCHEME" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MAX_DAILY_VOLUME" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+        </createTable>
+        <createTable tableName="SCM_TERMINAL_UNLOAD_CAPACITY">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="PRODUCT_ID" type="${uuid.type}">
+            </column>
+            <column name="PRODUCT_PACKAGE_ID" type="${uuid.type}">
+            </column>
+            <column name="TERMINAL_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRANSPORT_TYPE_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATE_START" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATE_END" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MAX_DAILY_VOLUME" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SCM_TOLERANCE">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+            </column>
+            <column name="NAME" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MIN_" type="numeric(8,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MAX_" type="numeric(8,2)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SCM_TRACK">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="NAME" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRACK_TYPE" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRACK_STATUS" type="int">
+            </column>
+            <column name="PPIO_MONTH_ID" type="int">
+            </column>
+            <column name="FILLING_START_DATE" type="date">
+            </column>
+            <column name="FILLING_END_DATE" type="date">
+            </column>
+            <column name="USER_ID" type="${uuid.type}">
+            </column>
+            <column name="IS_ACTIVE" type="boolean">
+            </column>
+            <column name="IS_FROZEN" type="boolean">
+            </column>
+            <column name="PARENT_TRACK_ID" type="${uuid.type}">
+            </column>
+        </createTable>
+        <createTable tableName="SCM_TRANSPORT_CATEGORY">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+            </column>
+            <column name="NAME" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRANSPORT_MODE" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SCM_TRANSPORT_TYPE">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+            </column>
+            <column name="NAME" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRANSPORT_CATEGORY_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SCM_USER">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERNAME" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PASSWORD" type="varchar(255)">
+            </column>
+            <column name="FIRST_NAME" type="varchar(255)">
+            </column>
+            <column name="LAST_NAME" type="varchar(255)">
+            </column>
+            <column name="EMAIL" type="varchar(255)">
+            </column>
+            <column name="ACTIVE" type="boolean">
+            </column>
+            <column name="TIME_ZONE_ID" type="varchar(255)">
+            </column>
+            <column name="LOCALE" type="varchar(255)">
+            </column>
+        </createTable>
+        <createTable tableName="SCM_USER_TRACK_TYPE_ACCESS">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USER_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRACK_TYPE" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ACCESS_" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SCM_VESSEL">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+            </column>
+            <column name="IMO" type="varchar(7)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRANSPORT_TYPE_ID" type="${uuid.type}">
+            </column>
+            <column name="DEADWEIGHT" type="int">
+            </column>
+        </createTable>
+        <createTable tableName="SCM_VESSEL_LOAD">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="TRACK_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TBN_NUM" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TERMINAL_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRANSPORT_TYPE_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VESSEL_NAME" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VESSEL_ID" type="${uuid.type}">
+            </column>
+            <column name="PLANNING_LOADING_START_DATE" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PLANNING_LOADING_END_DATE" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ACTUAL_LOADING_START_DATE" type="date">
+            </column>
+            <column name="ACTUAL_LOADING_END_DATE" type="date">
+            </column>
+            <column name="PLANNING_LAYCAN_START_DATE" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PLANNING_LAYCAN_END_DATE" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ACTUAL_LAYCAN_START_DATE" type="date">
+            </column>
+            <column name="ACTUAL_LAYCAN_END_DATE" type="date">
+            </column>
+            <column name="VESSEL_LOAD_STATUS" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BILL_OF_LOADING_DATE" type="date">
+            </column>
+            <column name="COMMENT_" type="varchar(2000)">
+            </column>
+            <column name="TOTAL_VOLUME" type="int">
+            </column>
+            <column name="FREIGHT_ORDER" type="varchar(20)">
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+        </createTable>
+        <createTable tableName="SCM_VESSEL_LOAD_ITEM">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VESSEL_LOAD_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRE_PARTY_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PORT_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INCOTERMS_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CLIENT" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VOLUME" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TOLERANCE_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+        </createTable>
+        <createTable tableName="SCM_WAREHOUSE">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="DELETED_BY" type="varchar(255)">
+            </column>
+            <column name="DELETED_DATE" type="timestamp">
+            </column>
+            <column name="IS_ARCHIVED" type="boolean">
+            </column>
+            <column name="NAME" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SCM_WAREHOUSE_CAPACITY">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VERSION" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(255)">
+            </column>
+            <column name="CREATED_DATE" type="timestamp">
+            </column>
+            <column name="LAST_MODIFIED_BY" type="varchar(255)">
+            </column>
+            <column name="LAST_MODIFIED_DATE" type="timestamp">
+            </column>
+            <column name="PRODUCT_ID" type="${uuid.type}">
+            </column>
+            <column name="PRODUCT_PACKAGE_ID" type="${uuid.type}">
+            </column>
+            <column name="WAREHOUSE_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATE_START" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATE_END" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CAPACITY" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SCM_WAREHOUSE_TERMINAL">
+            <column name="ID" type="${uuid.type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="TERMINAL_ID" type="${uuid.type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="codex" context="!cuba">
+        <createIndex indexName="IDX_SCM_CORRECTION_TYPE_UNQ" tableName="SCM_CORRECTION_TYPE" unique="true">
+            <column name="NAME"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_COUNTRY_UNQ" tableName="SCM_COUNTRY" unique="true">
+            <column name="ALPHA_2_CODE"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_COUNTRY_REGION" tableName="SCM_COUNTRY">
+            <column name="REGION_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_INCOTERMS_UNQ" tableName="SCM_INCOTERMS" unique="true">
+            <column name="NAME"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_LEADTIME_PLANT" tableName="SCM_LEADTIME">
+            <column name="PLANT_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_LEADTIME_PRODUCT" tableName="SCM_LEADTIME">
+            <column name="PRODUCT_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_LEADTIME_PRODUCT_PACKAGE" tableName="SCM_LEADTIME">
+            <column name="PRODUCT_PACKAGE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_LEADTIME_TRANSPORT_TYPE" tableName="SCM_LEADTIME">
+            <column name="TRANSPORT_TYPE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_LEADTIME_TERMINAL" tableName="SCM_LEADTIME">
+            <column name="TERMINAL_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_MOVEMENT_WAREHOUSE" tableName="SCM_MOVEMENT">
+            <column name="WAREHOUSE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_MOVEMENT_PRODUCT" tableName="SCM_MOVEMENT">
+            <column name="PRODUCT_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_MOVEMENT_PRODUCT_PACKAGE" tableName="SCM_MOVEMENT">
+            <column name="PRODUCT_PACKAGE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_MOVEMENT_ORIGIN_PLANT" tableName="SCM_MOVEMENT">
+            <column name="ORIGIN_PLANT_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_MOVEMENT_REASON" tableName="SCM_MOVEMENT">
+            <column name="REASON_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_MOVEMENT_TRACK" tableName="SCM_MOVEMENT">
+            <column name="TRACK_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PLANT_UNQ" tableName="SCM_PLANT" unique="true">
+            <column name="CODE"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PLANT_UNQ_NAME" tableName="SCM_PLANT" unique="true">
+            <column name="NAME"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PLANT_LOAD_CAPACITY_PLANT" tableName="SCM_PLANT_LOAD_CAPACITY">
+            <column name="PLANT_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PLANT_LOAD_CAPACITY_PRODUCT" tableName="SCM_PLANT_LOAD_CAPACITY">
+            <column name="PRODUCT_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PLANT_LOAD_CAPACITY_PRODUCT_PACKAGE" tableName="SCM_PLANT_LOAD_CAPACITY">
+            <column name="PRODUCT_PACKAGE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PLANT_LOAD_CAPACITY_TRANSPORT_TYPE" tableName="SCM_PLANT_LOAD_CAPACITY">
+            <column name="TRANSPORT_TYPE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PORT_UNQ" tableName="SCM_PORT" unique="true">
+            <column name="CODE"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PORT_COUNTRY" tableName="SCM_PORT">
+            <column name="COUNTRY_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PPIO_MONTH_UNQ_NAME" tableName="SCM_PPIO_MONTH" unique="true">
+            <column name="NAME"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PPIO_MONTH_UNQ_FIRST_DATE" tableName="SCM_PPIO_MONTH" unique="true">
+            <column name="FIRST_DATE"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_T_PREPARTY_PRODUCT" tableName="SCM_PREPARTY">
+            <column name="PRODUCT_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PREPARTY_PRODUCT_PACKAGE" tableName="SCM_PREPARTY">
+            <column name="PRODUCT_PACKAGE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PREPARTY_PLANT" tableName="SCM_PREPARTY">
+            <column name="ORIGIN_PLANT_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PREPARTY_TOLERANCE" tableName="SCM_PREPARTY">
+            <column name="TOLERANCE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PREPARTY_TERMINAL" tableName="SCM_PREPARTY">
+            <column name="LOADING_TERMINAL_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PREPARTY_PORT" tableName="SCM_PREPARTY">
+            <column name="UNLOADING_PORT_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PREPARTY_INCOTERMS" tableName="SCM_PREPARTY">
+            <column name="INCOTERMS_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PREPARTY_PRODUCT_NORMAL" tableName="SCM_PREPARTY">
+            <column name="PRODUCT_NORMAL_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PRODUCT_UNQ" tableName="SCM_PRODUCT" unique="true">
+            <column name="NAME"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PRODUCT_PRODUCT_NORMAL" tableName="SCM_PRODUCT">
+            <column name="PRODUCT_NORMAL_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PRODUCT_GROUP_FIVE_UNQ" tableName="SCM_PRODUCT_GROUP_FIVE" unique="true">
+            <column name="NAME"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PRODUCT_NORMAL_UNQ" tableName="SCM_PRODUCT_NORMAL" unique="true">
+            <column name="NAME"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PRODUCT_NORMAL_PRODUCT_GROUP_FIVE" tableName="SCM_PRODUCT_NORMAL">
+            <column name="PRODUCT_GROUP_FIVE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_PRODUCT_PACKAGE_UNQ" tableName="SCM_PRODUCT_PACKAGE" unique="true">
+            <column name="CODE"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_REGION_UNQ" tableName="SCM_REGION" unique="true">
+            <column name="NAME"/>
+        </createIndex>
+        <createIndex indexName="IDX_SHIPMENT_ON_DAY" tableName="SHIPMENT">
+            <column name="DAY_"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_SHIPPING_COMBINATION_PLANT" tableName="SCM_SHIPPING_COMBINATION">
+            <column name="PLANT_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_SHIPPING_COMBINATION_WAREHOUSE" tableName="SCM_SHIPPING_COMBINATION">
+            <column name="WAREHOUSE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_SHIPPING_COMBINATION_PRODUCT" tableName="SCM_SHIPPING_COMBINATION">
+            <column name="PRODUCT_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_SHIPPING_COMBINATION_PRODUCT_PACKAGE" tableName="SCM_SHIPPING_COMBINATION">
+            <column name="PRODUCT_PACKAGE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_SHIPPING_COMBINATION_TRANSPORT_TYPE" tableName="SCM_SHIPPING_COMBINATION">
+            <column name="TRANSPORT_TYPE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_SHIPPING_COMBINATION_UNIQUE_ACTIVE" tableName="SCM_SHIPPING_COMBINATION" unique="true">
+            <column name="PLANT_ID"/>
+            <column name="WAREHOUSE_ID"/>
+            <column name="PRODUCT_ID"/>
+            <column name="PRODUCT_PACKAGE_ID"/>
+            <column name="TRANSPORT_TYPE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_STOCK_WAREHOUSE" tableName="SCM_STOCK">
+            <column name="WAREHOUSE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_STOCK_PRODUCT" tableName="SCM_STOCK">
+            <column name="PRODUCT_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_STOCK_PRODUCT_PACKAGE" tableName="SCM_STOCK">
+            <column name="PRODUCT_PACKAGE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_STOCK_ORIGIN_PLANT" tableName="SCM_STOCK">
+            <column name="ORIGIN_PLANT_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_STOCK_TRACK" tableName="SCM_STOCK">
+            <column name="TRACK_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_TERMINAL_UNQ" tableName="SCM_TERMINAL" unique="true">
+            <column name="CODE"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_TERMINAL_PORT" tableName="SCM_TERMINAL">
+            <column name="PORT_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_TERMINAL_LOAD_CAPACITY_PRODUCT" tableName="SCM_TERMINAL_LOAD_CAPACITY">
+            <column name="PRODUCT_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_TERMINAL_LOAD_CAPACITY_PRODUCT_PACKAGE" tableName="SCM_TERMINAL_LOAD_CAPACITY">
+            <column name="PRODUCT_PACKAGE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_TERMINAL_LOAD_CAPACITY_TERMINAL" tableName="SCM_TERMINAL_LOAD_CAPACITY">
+            <column name="TERMINAL_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_TERMINAL_LOAD_CAPACITY_UNIQUE_ACTIVE" tableName="SCM_TERMINAL_LOAD_CAPACITY" unique="true">
+            <column name="PRODUCT_ID"/>
+            <column name="PRODUCT_PACKAGE_ID"/>
+            <column name="TECHNOLOGY_SCHEME"/>
+            <column name="TERMINAL_ID"/>
+            <column name="DATE_START"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_TERMINAL_UNLOAD_CAPACITY_PRODUCT" tableName="SCM_TERMINAL_UNLOAD_CAPACITY">
+            <column name="PRODUCT_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_TERMINAL_UNLOAD_CAPACITY_PRODUCT_PACKAGE" tableName="SCM_TERMINAL_UNLOAD_CAPACITY">
+            <column name="PRODUCT_PACKAGE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_TERMINAL_UNLOAD_CAPACITY_TERMINAL" tableName="SCM_TERMINAL_UNLOAD_CAPACITY">
+            <column name="TERMINAL_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_TERMINAL_UNLOAD_CAPACITY_TRANSPORT_TYPE" tableName="SCM_TERMINAL_UNLOAD_CAPACITY">
+            <column name="TRANSPORT_TYPE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_TOLERANCE_UNQ" tableName="SCM_TOLERANCE" unique="true">
+            <column name="NAME"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_TRACK_PPIO_MONTH" tableName="SCM_TRACK">
+            <column name="PPIO_MONTH_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_TRACK_USER" tableName="SCM_TRACK">
+            <column name="USER_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_TRACK_PARENT_TRACK" tableName="SCM_TRACK">
+            <column name="PARENT_TRACK_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_TRANSPORT_CATEGORY_UNQ" tableName="SCM_TRANSPORT_CATEGORY" unique="true">
+            <column name="NAME"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_TRANSPORT_TYPE_UNQ" tableName="SCM_TRANSPORT_TYPE" unique="true">
+            <column name="NAME"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_TRANSPORT_TYPE_TRANSPORT_CATEGORY" tableName="SCM_TRANSPORT_TYPE">
+            <column name="TRANSPORT_CATEGORY_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_USER_ON_USERNAME" tableName="SCM_USER" unique="true">
+            <column name="USERNAME"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_USER_TRACK_TYPE_ACCESS_USER" tableName="SCM_USER_TRACK_TYPE_ACCESS">
+            <column name="USER_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_USER_TRACK_TYPE_ACCESS_UNQ" tableName="SCM_USER_TRACK_TYPE_ACCESS" unique="true">
+            <column name="USER_ID"/>
+            <column name="TRACK_TYPE"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_VESSEL_UNQ_IMO" tableName="SCM_VESSEL" unique="true">
+            <column name="IMO"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_VESSEL_TRANSPORT_TYPE" tableName="SCM_VESSEL">
+            <column name="TRANSPORT_TYPE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_VESSEL_LOAD_TRACK" tableName="SCM_VESSEL_LOAD">
+            <column name="TRACK_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_VESSEL_LOAD_TERMINAL" tableName="SCM_VESSEL_LOAD">
+            <column name="TERMINAL_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_VESSEL_LOAD_TRANSPORT_TYPE" tableName="SCM_VESSEL_LOAD">
+            <column name="TRANSPORT_TYPE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_VESSEL_LOAD_VESSEL" tableName="SCM_VESSEL_LOAD">
+            <column name="VESSEL_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_VESSEL_LOAD_ITEM_VESSEL_LOAD" tableName="SCM_VESSEL_LOAD_ITEM">
+            <column name="VESSEL_LOAD_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_VESSEL_LOAD_ITEM_PRE_PARTY" tableName="SCM_VESSEL_LOAD_ITEM">
+            <column name="PRE_PARTY_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_VESSEL_LOAD_ITEM_PORT" tableName="SCM_VESSEL_LOAD_ITEM">
+            <column name="PORT_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_VESSEL_LOAD_ITEM_INCOTERMS" tableName="SCM_VESSEL_LOAD_ITEM">
+            <column name="INCOTERMS_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_VESSEL_LOAD_ITEM_TOLERANCE" tableName="SCM_VESSEL_LOAD_ITEM">
+            <column name="TOLERANCE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_WAREHOUSE_UNQ" tableName="SCM_WAREHOUSE" unique="true">
+            <column name="NAME"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_WAREHOUSE_CAPACITY_PRODUCT" tableName="SCM_WAREHOUSE_CAPACITY">
+            <column name="PRODUCT_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_WAREHOUSE_CAPACITY_PRODUCT_PACKAGE" tableName="SCM_WAREHOUSE_CAPACITY">
+            <column name="PRODUCT_PACKAGE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_WAREHOUSE_CAPACITY_WAREHOUSE" tableName="SCM_WAREHOUSE_CAPACITY">
+            <column name="WAREHOUSE_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX_SCM_WAREHOUSE_TERMINAL_TERMINAL" tableName="SCM_WAREHOUSE_TERMINAL">
+            <column name="TERMINAL_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="3" author="codex" context="!cuba">
+        <addForeignKeyConstraint baseTableName="SCM_WAREHOUSE_TERMINAL" baseColumnNames="ID"
+                                 constraintName="FK_SCM_WAREHOUSE_TERMINAL_ID" referencedTableName="SCM_WAREHOUSE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_COUNTRY" baseColumnNames="REGION_ID"
+                                 constraintName="FK_SCM_COUNTRY_REGION_ID" referencedTableName="SCM_REGION" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_LEADTIME" baseColumnNames="PLANT_ID"
+                                 constraintName="FK_SCM_LEADTIME_PLANT_ID" referencedTableName="SCM_PLANT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_LEADTIME" baseColumnNames="PRODUCT_ID"
+                                 constraintName="FK_SCM_LEADTIME_PRODUCT_ID" referencedTableName="SCM_PRODUCT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_LEADTIME" baseColumnNames="PRODUCT_PACKAGE_ID"
+                                 constraintName="FK_SCM_LEADTIME_PRODUCT_PACKAGE_ID" referencedTableName="SCM_PRODUCT_PACKAGE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_LEADTIME" baseColumnNames="TERMINAL_ID"
+                                 constraintName="FK_SCM_LEADTIME_TERMINAL_ID" referencedTableName="SCM_TERMINAL" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_LEADTIME" baseColumnNames="TRANSPORT_TYPE_ID"
+                                 constraintName="FK_SCM_LEADTIME_TRANSPORT_TYPE_ID" referencedTableName="SCM_TRANSPORT_TYPE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_MOVEMENT" baseColumnNames="WAREHOUSE_ID"
+                                 constraintName="FK_SCM_MOVEMENT_WAREHOUSE_ID" referencedTableName="SCM_WAREHOUSE_TERMINAL" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_MOVEMENT" baseColumnNames="PRODUCT_ID"
+                                 constraintName="FK_SCM_MOVEMENT_PRODUCT_ID" referencedTableName="SCM_PRODUCT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_MOVEMENT" baseColumnNames="PRODUCT_PACKAGE_ID"
+                                 constraintName="FK_SCM_MOVEMENT_PRODUCT_PACKAGE_ID" referencedTableName="SCM_PRODUCT_PACKAGE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_MOVEMENT" baseColumnNames="ORIGIN_PLANT_ID"
+                                 constraintName="FK_SCM_MOVEMENT_ORIGIN_PLANT_ID" referencedTableName="SCM_PLANT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_MOVEMENT" baseColumnNames="TRACK_ID"
+                                 constraintName="FK_SCM_MOVEMENT_TRACK_ID" referencedTableName="SCM_TRACK" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_PLANT_LOAD_CAPACITY" baseColumnNames="PLANT_ID"
+                                 constraintName="FK_SCM_PLANT_LOAD_CAPACITY_PLANT_ID" referencedTableName="SCM_PLANT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_PLANT_LOAD_CAPACITY" baseColumnNames="PRODUCT_ID"
+                                 constraintName="FK_SCM_PLANT_LOAD_CAPACITY_PRODUCT_ID" referencedTableName="SCM_PRODUCT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_PLANT_LOAD_CAPACITY" baseColumnNames="PRODUCT_PACKAGE_ID"
+                                 constraintName="FK_SCM_PLANT_LOAD_CAPACITY_PRODUCT_PACKAGE_ID" referencedTableName="SCM_PRODUCT_PACKAGE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_PLANT_LOAD_CAPACITY" baseColumnNames="TRANSPORT_TYPE_ID"
+                                 constraintName="FK_SCM_PLANT_LOAD_CAPACITY_TRANSPORT_TYPE_ID" referencedTableName="SCM_TRANSPORT_TYPE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_PORT" baseColumnNames="COUNTRY_ID"
+                                 constraintName="FK_SCM_PORT_COUNTRY_ID" referencedTableName="SCM_COUNTRY" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_PREPARTY" baseColumnNames="PRODUCT_ID"
+                                 constraintName="FK_SCM_PREPARTY_PRODUCT_ID" referencedTableName="SCM_PRODUCT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_PREPARTY" baseColumnNames="PRODUCT_NORMAL_ID"
+                                 constraintName="FK_SCM_PREPARTY_PRODUCT_NORMAL_ID" referencedTableName="SCM_PRODUCT_NORMAL" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_PREPARTY" baseColumnNames="PRODUCT_PACKAGE_ID"
+                                 constraintName="FK_SCM_PREPARTY_PRODUCT_PACKAGE_ID" referencedTableName="SCM_PRODUCT_PACKAGE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_PREPARTY" baseColumnNames="ORIGIN_PLANT_ID"
+                                 constraintName="FK_SCM_PREPARTY_ORIGIN_PLANT_ID" referencedTableName="SCM_PLANT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_PREPARTY" baseColumnNames="LOADING_TERMINAL_ID"
+                                 constraintName="FK_SCM_PREPARTY_LOADING_TERMINAL_ID" referencedTableName="SCM_TERMINAL" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_PREPARTY" baseColumnNames="UNLOADING_PORT_ID"
+                                 constraintName="FK_SCM_PREPARTY_UNLOADING_PORT_ID" referencedTableName="SCM_PORT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_PREPARTY" baseColumnNames="INCOTERMS_ID"
+                                 constraintName="FK_SCM_PREPARTY_INCOTERMS_ID" referencedTableName="SCM_INCOTERMS" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_PREPARTY" baseColumnNames="TOLERANCE_ID"
+                                 constraintName="FK_SCM_PREPARTY_TOLERANCE_ID" referencedTableName="SCM_TOLERANCE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_PRODUCT" baseColumnNames="PRODUCT_NORMAL_ID"
+                                 constraintName="FK_SCM_PRODUCT_PRODUCT_NORMAL_ID" referencedTableName="SCM_PRODUCT_NORMAL" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_PRODUCT_NORMAL" baseColumnNames="PRODUCT_GROUP_FIVE_ID"
+                                 constraintName="FK_SCM_PRODUCT_NORMAL_PRODUCT_GROUP_FIVE_ID" referencedTableName="SCM_PRODUCT_GROUP_FIVE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SHIPMENT" baseColumnNames="PLANT_ID"
+                                 constraintName="FK_SHIPMENT_PLANT_ID" referencedTableName="SCM_PLANT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SHIPMENT" baseColumnNames="PRODUCT_ID"
+                                 constraintName="FK_SHIPMENT_PRODUCT_ID" referencedTableName="SCM_PRODUCT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SHIPMENT" baseColumnNames="VESSEL_ID"
+                                 constraintName="FK_SHIPMENT_VESSEL_ID" referencedTableName="SCM_VESSEL" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SHIPMENT_VIEW" baseColumnNames="PLANT_ID"
+                                 constraintName="FK_SHIPMENT_VIEW_PLANT_ID" referencedTableName="SCM_PLANT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SHIPMENT_VIEW" baseColumnNames="PRODUCT_ID"
+                                 constraintName="FK_SHIPMENT_VIEW_PRODUCT_ID" referencedTableName="SCM_PRODUCT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SHIPMENT_VIEW" baseColumnNames="VESSEL_ID"
+                                 constraintName="FK_SHIPMENT_VIEW_VESSEL_ID" referencedTableName="SCM_VESSEL" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_SHIPPING_COMBINATION" baseColumnNames="PLANT_ID"
+                                 constraintName="FK_SCM_SHIPPING_COMBINATION_PLANT_ID" referencedTableName="SCM_PLANT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_SHIPPING_COMBINATION" baseColumnNames="WAREHOUSE_ID"
+                                 constraintName="FK_SCM_SHIPPING_COMBINATION_WAREHOUSE_ID" referencedTableName="SCM_WAREHOUSE_TERMINAL" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_SHIPPING_COMBINATION" baseColumnNames="PRODUCT_ID"
+                                 constraintName="FK_SCM_SHIPPING_COMBINATION_PRODUCT_ID" referencedTableName="SCM_PRODUCT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_SHIPPING_COMBINATION" baseColumnNames="PRODUCT_PACKAGE_ID"
+                                 constraintName="FK_SCM_SHIPPING_COMBINATION_PRODUCT_PACKAGE_ID" referencedTableName="SCM_PRODUCT_PACKAGE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_SHIPPING_COMBINATION" baseColumnNames="TRANSPORT_TYPE_ID"
+                                 constraintName="FK_SCM_SHIPPING_COMBINATION_TRANSPORT_TYPE_ID" referencedTableName="SCM_TRANSPORT_TYPE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_STOCK" baseColumnNames="WAREHOUSE_ID"
+                                 constraintName="FK_SCM_STOCK_WAREHOUSE_ID" referencedTableName="SCM_WAREHOUSE_TERMINAL" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_STOCK" baseColumnNames="PRODUCT_ID"
+                                 constraintName="FK_SCM_STOCK_PRODUCT_ID" referencedTableName="SCM_PRODUCT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_STOCK" baseColumnNames="PRODUCT_PACKAGE_ID"
+                                 constraintName="FK_SCM_STOCK_PRODUCT_PACKAGE_ID" referencedTableName="SCM_PRODUCT_PACKAGE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_STOCK" baseColumnNames="ORIGIN_PLANT_ID"
+                                 constraintName="FK_SCM_STOCK_ORIGIN_PLANT_ID" referencedTableName="SCM_PLANT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_STOCK" baseColumnNames="TRACK_ID"
+                                 constraintName="FK_SCM_STOCK_TRACK_ID" referencedTableName="SCM_TRACK" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_TERMINAL" baseColumnNames="PORT_ID"
+                                 constraintName="FK_SCM_TERMINAL_PORT_ID" referencedTableName="SCM_PORT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_TERMINAL_LOAD_CAPACITY" baseColumnNames="PRODUCT_ID"
+                                 constraintName="FK_SCM_TERMINAL_LOAD_CAPACITY_PRODUCT_ID" referencedTableName="SCM_PRODUCT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_TERMINAL_LOAD_CAPACITY" baseColumnNames="PRODUCT_PACKAGE_ID"
+                                 constraintName="FK_SCM_TERMINAL_LOAD_CAPACITY_PRODUCT_PACKAGE_ID" referencedTableName="SCM_PRODUCT_PACKAGE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_TERMINAL_LOAD_CAPACITY" baseColumnNames="TERMINAL_ID"
+                                 constraintName="FK_SCM_TERMINAL_LOAD_CAPACITY_TERMINAL_ID" referencedTableName="SCM_TERMINAL" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_TERMINAL_UNLOAD_CAPACITY" baseColumnNames="PRODUCT_ID"
+                                 constraintName="FK_SCM_TERMINAL_UNLOAD_CAPACITY_PRODUCT_ID" referencedTableName="SCM_PRODUCT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_TERMINAL_UNLOAD_CAPACITY" baseColumnNames="PRODUCT_PACKAGE_ID"
+                                 constraintName="FK_SCM_TERMINAL_UNLOAD_CAPACITY_PRODUCT_PACKAGE_ID" referencedTableName="SCM_PRODUCT_PACKAGE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_TERMINAL_UNLOAD_CAPACITY" baseColumnNames="TERMINAL_ID"
+                                 constraintName="FK_SCM_TERMINAL_UNLOAD_CAPACITY_TERMINAL_ID" referencedTableName="SCM_TERMINAL" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_TERMINAL_UNLOAD_CAPACITY" baseColumnNames="TRANSPORT_TYPE_ID"
+                                 constraintName="FK_SCM_TERMINAL_UNLOAD_CAPACITY_TRANSPORT_TYPE_ID" referencedTableName="SCM_TRANSPORT_TYPE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_TRACK" baseColumnNames="PPIO_MONTH_ID"
+                                 constraintName="FK_SCM_TRACK_PPIO_MONTH_ID" referencedTableName="SCM_PPIO_MONTH" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_TRACK" baseColumnNames="USER_ID"
+                                 constraintName="FK_SCM_TRACK_USER_ID" referencedTableName="SCM_USER" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_TRACK" baseColumnNames="PARENT_TRACK_ID"
+                                 constraintName="FK_SCM_TRACK_PARENT_TRACK_ID" referencedTableName="SCM_TRACK" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_TRANSPORT_TYPE" baseColumnNames="TRANSPORT_CATEGORY_ID"
+                                 constraintName="FK_SCM_TRANSPORT_TYPE_TRANSPORT_CATEGORY_ID" referencedTableName="SCM_TRANSPORT_CATEGORY" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_USER_TRACK_TYPE_ACCESS" baseColumnNames="USER_ID"
+                                 constraintName="FK_SCM_USER_TRACK_TYPE_ACCESS_USER_ID" referencedTableName="SCM_USER" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_VESSEL" baseColumnNames="TRANSPORT_TYPE_ID"
+                                 constraintName="FK_SCM_VESSEL_TRANSPORT_TYPE_ID" referencedTableName="SCM_TRANSPORT_TYPE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_VESSEL_LOAD" baseColumnNames="TRACK_ID"
+                                 constraintName="FK_SCM_VESSEL_LOAD_TRACK_ID" referencedTableName="SCM_TRACK" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_VESSEL_LOAD" baseColumnNames="TERMINAL_ID"
+                                 constraintName="FK_SCM_VESSEL_LOAD_TERMINAL_ID" referencedTableName="SCM_TERMINAL" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_VESSEL_LOAD" baseColumnNames="TRANSPORT_TYPE_ID"
+                                 constraintName="FK_SCM_VESSEL_LOAD_TRANSPORT_TYPE_ID" referencedTableName="SCM_TRANSPORT_TYPE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_VESSEL_LOAD" baseColumnNames="VESSEL_ID"
+                                 constraintName="FK_SCM_VESSEL_LOAD_VESSEL_ID" referencedTableName="SCM_VESSEL" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_VESSEL_LOAD_ITEM" baseColumnNames="VESSEL_LOAD_ID"
+                                 constraintName="FK_SCM_VESSEL_LOAD_ITEM_VESSEL_LOAD_ID" referencedTableName="SCM_VESSEL_LOAD" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_VESSEL_LOAD_ITEM" baseColumnNames="PRE_PARTY_ID"
+                                 constraintName="FK_SCM_VESSEL_LOAD_ITEM_PRE_PARTY_ID" referencedTableName="SCM_PREPARTY" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_VESSEL_LOAD_ITEM" baseColumnNames="PORT_ID"
+                                 constraintName="FK_SCM_VESSEL_LOAD_ITEM_PORT_ID" referencedTableName="SCM_PORT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_VESSEL_LOAD_ITEM" baseColumnNames="INCOTERMS_ID"
+                                 constraintName="FK_SCM_VESSEL_LOAD_ITEM_INCOTERMS_ID" referencedTableName="SCM_INCOTERMS" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_VESSEL_LOAD_ITEM" baseColumnNames="TOLERANCE_ID"
+                                 constraintName="FK_SCM_VESSEL_LOAD_ITEM_TOLERANCE_ID" referencedTableName="SCM_TOLERANCE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_WAREHOUSE_CAPACITY" baseColumnNames="PRODUCT_ID"
+                                 constraintName="FK_SCM_WAREHOUSE_CAPACITY_PRODUCT_ID" referencedTableName="SCM_PRODUCT" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_WAREHOUSE_CAPACITY" baseColumnNames="PRODUCT_PACKAGE_ID"
+                                 constraintName="FK_SCM_WAREHOUSE_CAPACITY_PRODUCT_PACKAGE_ID" referencedTableName="SCM_PRODUCT_PACKAGE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_WAREHOUSE_CAPACITY" baseColumnNames="WAREHOUSE_ID"
+                                 constraintName="FK_SCM_WAREHOUSE_CAPACITY_WAREHOUSE_ID" referencedTableName="SCM_WAREHOUSE" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="SCM_WAREHOUSE_TERMINAL" baseColumnNames="TERMINAL_ID"
+                                 constraintName="FK_SCM_WAREHOUSE_TERMINAL_TERMINAL_ID" referencedTableName="SCM_TERMINAL" referencedColumnNames="ID"/>
+    </changeSet>
+
+    <changeSet id="4" author="codex" context="!cuba">
+        <insert tableName="SCM_USER">
+            <column name="ID" value="60885987-1b61-4247-94c7-dff348347f93"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="USERNAME" value="admin"/>
+            <column name="PASSWORD" value="{noop}1"/>
+            <column name="ACTIVE" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="5" author="codex" context="!cuba">
+        <insert tableName="SEC_ROLE_ASSIGNMENT">
+            <column name="ID" value="6c9e420a-2b7a-4c42-8654-a9027ee14083"/>
+            <column name="VERSION" valueNumeric="1"/>
+            <column name="USERNAME" value="admin"/>
+            <column name="ROLE_CODE" value="system-full-access"/>
+            <column name="ROLE_TYPE" value="resource"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="6" author="codex" context="!cuba">
+        <update tableName="SCM_USER">
+            <column name="PASSWORD" value="{bcrypt}$2a$10$zk6wpc4BZnHJQ6brP2RxBuxhTqYaDznkJ5mK/6zKk4aon.NAktPw6"/>
+            <where>USERNAME = 'admin'</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>
