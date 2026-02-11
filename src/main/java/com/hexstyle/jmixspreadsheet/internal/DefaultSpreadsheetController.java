@@ -440,9 +440,32 @@ public class DefaultSpreadsheetController<E, DC> implements SpreadsheetControlle
     // Private helper methods
 
     private void validateModel(SpreadsheetTableModel<E> model, DC dataContainer) {
-        // Basic validation: ensure model entity class matches container
-        // Detailed validation depends on container implementation
-        // This is a placeholder for validation logic
+        Class<E> modelEntityClass = model.getEntityClass();
+        if (modelEntityClass == null) {
+            throw new IllegalArgumentException("Model entity class cannot be null");
+        }
+
+        DataSourceAdapter<E> validationDataSource = dataSourceAdapterFactory.create(dataContainer);
+        try {
+            Iterable<E> entities = validationDataSource.getEntities();
+            if (entities == null) {
+                return;
+            }
+            for (E entity : entities) {
+                if (entity == null) {
+                    continue;
+                }
+                if (!modelEntityClass.isInstance(entity)) {
+                    throw new IllegalArgumentException(
+                            "Model entity class " + modelEntityClass.getName()
+                                    + " is incompatible with container entity class "
+                                    + entity.getClass().getName());
+                }
+                return;
+            }
+        } finally {
+            validationDataSource.dispose();
+        }
     }
 
     private void setupDataChangeListeners() {
