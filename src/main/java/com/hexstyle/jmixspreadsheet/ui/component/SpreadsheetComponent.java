@@ -5,9 +5,9 @@ import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.spreadsheet.Spreadsheet;
-import com.vaadin.flow.shared.Registration;
 import io.jmix.core.DataManager;
 import io.jmix.core.Metadata;
+import io.jmix.core.common.event.Subscription;
 import io.jmix.flowui.model.CollectionLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,7 +37,7 @@ public class SpreadsheetComponent<E> extends Composite<Div> implements HasSize {
     private boolean autoRefreshViewport = true;
     private boolean autoResize = true;
     private String headerStyle = SpreadsheetComponentConfig.DEFAULT_HEADER_STYLE;
-    private Registration dataLoaderPostLoadRegistration;
+    private Subscription dataLoaderPostLoadRegistration;
     private boolean dataLoaderReloadPending;
 
     /**
