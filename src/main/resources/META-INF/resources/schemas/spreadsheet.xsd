@@ -11,6 +11,8 @@
                 <xs:extension base="layout:baseComponent">
                     <xs:attributeGroup ref="layout:hasSize"/>
                     <xs:attribute name="dataContainer" type="xs:string"/>
+                    <xs:attribute name="dataLoader" type="xs:string"/>
+                    <xs:attribute name="data-loader" type="xs:string"/>
                     <xs:attribute name="readOnly" type="xs:boolean"/>
                     <xs:attribute name="read-only" type="xs:boolean"/>
                     <xs:attribute name="navigationGridVisible" type="xs:boolean"/>

@@ -5,8 +5,10 @@ import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.spreadsheet.Spreadsheet;
+import com.vaadin.flow.shared.Registration;
 import io.jmix.core.DataManager;
 import io.jmix.core.Metadata;
+import io.jmix.flowui.model.CollectionLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -35,6 +37,8 @@ public class SpreadsheetComponent<E> extends Composite<Div> implements HasSize {
     private boolean autoRefreshViewport = true;
     private boolean autoResize = true;
     private String headerStyle = SpreadsheetComponentConfig.DEFAULT_HEADER_STYLE;
+    private Registration dataLoaderPostLoadRegistration;
+    private boolean dataLoaderReloadPending;
 
     /**
      * Creates a new spreadsheet component.
@@ -69,6 +73,10 @@ public class SpreadsheetComponent<E> extends Composite<Div> implements HasSize {
         controller.setNavigationGridVisible(navigationGridVisible);
         // Attach the Vaadin Spreadsheet component to the content div
         getContent().add(spreadsheet);
+        if (dataLoaderReloadPending) {
+            dataLoaderReloadPending = false;
+            reload();
+        }
     }
 
     /**
@@ -239,6 +247,29 @@ public class SpreadsheetComponent<E> extends Composite<Div> implements HasSize {
             throw new IllegalStateException("Controller is not set");
         }
         controller.reload();
+    }
+
+    /**
+     * Binds component reload to the post-load lifecycle of a data loader.
+     * <p>
+     * This allows declarative integration with components such as GenericFilter
+     * that trigger data loads automatically.
+     */
+    public void setDataLoader(CollectionLoader<?> dataLoader) {
+        if (dataLoaderPostLoadRegistration != null) {
+            dataLoaderPostLoadRegistration.remove();
+            dataLoaderPostLoadRegistration = null;
+        }
+        if (dataLoader == null) {
+            return;
+        }
+        dataLoaderPostLoadRegistration = dataLoader.addPostLoadListener(event -> {
+            if (controller == null) {
+                dataLoaderReloadPending = true;
+                return;
+            }
+            reload();
+        });
     }
 
     /**
