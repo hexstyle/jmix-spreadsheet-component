@@ -27,7 +27,7 @@ com.hexstyle.jmixspreadsheet.*
 
 ## Demo Application Code (Not Part of Library)
 
-The demo application lives under `com.digtp.scm.*` and includes:
+The demo application lives under `com.example.scm.*` and includes:
 
 - Entities, repositories, and services
 - Views and UI controllers

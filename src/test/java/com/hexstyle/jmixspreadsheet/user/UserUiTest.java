@@ -1,9 +1,9 @@
 package com.hexstyle.jmixspreadsheet.user;
 
-import com.digtp.scm.JmixSpreadsheetApplication;
-import com.digtp.scm.entity.User;
-import com.digtp.scm.view.user.UserDetailView;
-import com.digtp.scm.view.user.UserListView;
+import com.example.scm.JmixSpreadsheetApplication;
+import com.example.scm.entity.User;
+import com.example.scm.view.user.UserDetailView;
+import com.example.scm.view.user.UserListView;
 import io.jmix.core.DataManager;
 import io.jmix.flowui.ViewNavigators;
 import io.jmix.flowui.component.grid.DataGrid;
