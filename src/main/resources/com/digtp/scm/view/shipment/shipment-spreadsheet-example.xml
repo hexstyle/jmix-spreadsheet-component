@@ -32,9 +32,13 @@
     <layout>
         <vbox id="developerHelp" spacing="false">
             <h4 text="How to configure this example"/>
-            <label text="1) Keep the movement query in this XML loader and bind it to the spreadsheet via dataLoader."/>
-            <label text="2) Configure columns in ShipmentSpreadsheetExampleView#createTableModel()."/>
-            <label text="3) Only Volume is editable and highlighted with a style rule in onInit()."/>
+            <label text="1) Keep query in XML loader and bind spreadsheet to dataLoader=movementsDl."/>
+            <label text="   Example query: select m from scm_Movement m order by m.date desc, m.track.name"/>
+            <label text="2) Configure columns in createTableModel() via single helper method column(...)."/>
+            <label text="   Read-only example: column(&quot;date&quot;, &quot;Date&quot;, Movement::getDate, null)"/>
+            <label text="3) Make Volume editable by passing setter into the same helper method."/>
+            <label text="   Editable example: column(&quot;volume&quot;, &quot;Volume&quot;, Movement::getVolume, (m, v) -> m.setVolume(...))"/>
+            <label text="4) Highlight Volume in purple in onInit(): addStyleRule(...) + withStyleProvider(...)."/>
         </vbox>
         <spreadsheet:spreadsheet id="movementsSpreadsheet"
                                  dataLoader="movementsDl"

@@ -21,6 +21,7 @@ import io.jmix.flowui.view.ViewDescriptor;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 @Route(value = "shipments-spreadsheet-example", layout = MainView.class)
@@ -49,15 +50,16 @@ public class ShipmentSpreadsheetExampleView extends StandardView {
 
     private SpreadsheetTableModel<Movement> createTableModel() {
         List<SpreadsheetColumn<Movement>> columns = List.of(
-                readOnlyColumn("date", "Date", Movement::getDate),
-                readOnlyColumn("track", "Track", movement -> nested(movement, "track.name")),
-                readOnlyColumn("terminal", "Terminal", movement -> nested(movement, "warehouse.terminal.name")),
-                readOnlyColumn("product", "Product", movement -> nested(movement, "product.name")),
-                readOnlyColumn("originPlant", "Plant", movement -> nested(movement, "originPlant.name")),
-                readOnlyColumn("package", "Package", movement -> nested(movement, "productPackage.name")),
-                readOnlyColumn("reason", "Reason", this::reasonLabel),
-                editableVolumeColumn(),
-                readOnlyColumn("fact", "Fact", Movement::getIsFact)
+                column("date", "Date", Movement::getDate, null),
+                column("track", "Track", movement -> nested(movement, "track.name"), null),
+                column("terminal", "Terminal", movement -> nested(movement, "warehouse.terminal.name"), null),
+                column("product", "Product", movement -> nested(movement, "product.name"), null),
+                column("originPlant", "Plant", movement -> nested(movement, "originPlant.name"), null),
+                column("package", "Package", movement -> nested(movement, "productPackage.name"), null),
+                column("reason", "Reason", this::reasonLabel, null),
+                column("volume", "Volume", Movement::getVolume,
+                        (movement, value) -> movement.setVolume(toInteger(value, movement.getVolume()))),
+                column("fact", "Fact", Movement::getIsFact, null)
         );
 
         return new DefaultSpreadsheetTableModel<>(
@@ -71,30 +73,19 @@ public class ShipmentSpreadsheetExampleView extends StandardView {
         );
     }
 
-    private SpreadsheetColumn<Movement> readOnlyColumn(String id, String header,
-                                                        Function<Movement, Object> valueProvider) {
+    private SpreadsheetColumn<Movement> column(String id,
+                                              String header,
+                                              Function<Movement, Object> valueProvider,
+                                              BiConsumer<Movement, Object> setter) {
         return new DefaultSpreadsheetColumn<>(
                 id,
                 header,
                 valueProvider,
-                null,
+                setter,
                 value -> value == null ? "" : value.toString(),
                 null,
                 SpreadsheetColumn.Alignment.LEFT,
-                false
-        );
-    }
-
-    private SpreadsheetColumn<Movement> editableVolumeColumn() {
-        return new DefaultSpreadsheetColumn<>(
-                "volume",
-                "Volume",
-                Movement::getVolume,
-                (movement, value) -> movement.setVolume(toInteger(value, movement.getVolume())),
-                value -> value == null ? "" : value.toString(),
-                null,
-                SpreadsheetColumn.Alignment.LEFT,
-                true
+                setter != null
         );
     }
 
