@@ -167,6 +167,17 @@ public final class SpreadsheetComponentConfig<E> {
 
     public SpreadsheetTableModel<E> resolveModel() {
         if (tableModel != null) {
+            if (interactionHandler != null) {
+                return new DefaultSpreadsheetTableModel<>(
+                        tableModel.getEntityClass(),
+                        tableModel.getColumns(),
+                        tableModel.getGrouping(),
+                        tableModel.getFilter(),
+                        tableModel.getSort(),
+                        tableModel.getPivot(),
+                        interactionHandler
+                );
+            }
             return tableModel;
         }
         return new DefaultSpreadsheetTableModel<>(

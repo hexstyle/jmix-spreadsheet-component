@@ -1,5 +1,7 @@
 package com.hexstyle.jmixspreadsheet.api;
 
+import java.time.Instant;
+
 /**
  * Handles user interactions with spreadsheet cells.
  * <p>
@@ -34,6 +36,19 @@ public interface SpreadsheetInteractionHandler<E> {
      * @param context the interaction context containing selection information
      */
     default void onSelectionChange(InteractionContext<E> context) {
+        // Default implementation does nothing
+    }
+
+    /**
+     * Called after a cell edit attempt is processed.
+     * <p>
+     * This callback is fired for both successful and rejected edits.
+     * Use {@link InteractionContext#isEditSuccessful()} and
+     * {@link InteractionContext#getEditError()} to inspect the result.
+     *
+     * @param context the interaction context containing edit details
+     */
+    default void onCellEdit(InteractionContext<E> context) {
         // Default implementation does nothing
     }
 
@@ -93,5 +108,51 @@ public interface SpreadsheetInteractionHandler<E> {
          * @return the array of selected column indices, or empty array if not applicable
          */
         int[] getSelectedColumns();
+
+        /**
+         * Returns the edit event timestamp.
+         *
+         * @return timestamp for edit events, or {@code null} for non-edit interactions
+         */
+        default Instant getEditTimestamp() {
+            return null;
+        }
+
+        /**
+         * Returns the cell value before edit.
+         *
+         * @return old value for edit events, or {@code null} if not applicable
+         */
+        default Object getOldValue() {
+            return null;
+        }
+
+        /**
+         * Returns the value requested by the user.
+         *
+         * @return requested new value for edit events, or {@code null} if not applicable
+         */
+        default Object getNewValue() {
+            return null;
+        }
+
+        /**
+         * Returns whether the edit was applied successfully.
+         *
+         * @return {@code true} for successful edit, {@code false} for rejected/failed edit,
+         * or {@code null} if not applicable
+         */
+        default Boolean isEditSuccessful() {
+            return null;
+        }
+
+        /**
+         * Returns error text when edit failed.
+         *
+         * @return error text for failed edits, or {@code null}
+         */
+        default String getEditError() {
+            return null;
+        }
     }
 }

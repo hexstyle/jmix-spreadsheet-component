@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
 
 @UiTest
@@ -60,8 +61,12 @@ class ShipmentSpreadsheetExampleViewUiTest {
             Assertions.assertThat(spreadsheet).isNotNull();
             Assertions.assertThat(spreadsheetContains(spreadsheet, "Date")).isTrue();
             Assertions.assertThat(spreadsheetContains(spreadsheet, "Reason")).isTrue();
-            Assertions.assertThat(spreadsheetContains(spreadsheet, "Volume")).isTrue();
+            Assertions.assertThat(spreadsheetContains(spreadsheet, "Value")).isTrue();
             Assertions.assertThat(spreadsheetContains(spreadsheet, "VesselLoadingReason")).isTrue();
+
+            com.vaadin.flow.component.textfield.TextArea editLogField = UiTestUtils.getComponent(view, "editLogField");
+            Assertions.assertThat(editLogField).isNotNull();
+            Assertions.assertThat(editLogField.isReadOnly()).isTrue();
 
             SpreadsheetTableModel<Movement> model = readModel(spreadsheetComponent.getController());
             List<SpreadsheetColumn<Movement>> columns = model.getColumns();
@@ -92,7 +97,7 @@ class ShipmentSpreadsheetExampleViewUiTest {
             }
             Assertions.assertThat(movement.getDate()).isEqualTo(oldDate);
 
-            int volumeColumnIndex = findColumnIndex(spreadsheet, "Volume");
+            int volumeColumnIndex = findColumnIndex(spreadsheet, "Value");
             int firstDataRow = findFirstDataRow(spreadsheet, volumeColumnIndex);
             Assertions.assertThat(isPurpleText(spreadsheet.getCell(firstDataRow, volumeColumnIndex))).isTrue();
         } finally {
@@ -100,6 +105,59 @@ class ShipmentSpreadsheetExampleViewUiTest {
         }
     }
 
+
+
+    @Test
+    void controllerRejectsHeaderEditAndPersistsValueEdit() throws Exception {
+        TestDataFactory factory = new TestDataFactory(dataManager);
+        factory.ensureJanuary2026PortBalanceData();
+
+        View<?> origin = UiTestUtils.getCurrentView();
+        DialogWindow<View<?>> dialog = dialogWindows.view(origin, "ShipmentSpreadsheetExampleView").open();
+
+        try {
+            View<?> view = dialog.getView();
+            SpreadsheetComponent<?> spreadsheetComponent = UiTestUtils.getComponent(view, "movementsSpreadsheet");
+            Spreadsheet spreadsheet = spreadsheetComponent.getSpreadsheet();
+            Object controller = spreadsheetComponent.getController();
+            CollectionContainer<Movement> movementsDc = readMovementsContainer(view);
+            com.vaadin.flow.component.textfield.TextArea editLogField = UiTestUtils.getComponent(view, "editLogField");
+
+            int valueColumnIndex = findColumnIndex(spreadsheet, "Value");
+            int firstDataRow = findFirstDataRow(spreadsheet, valueColumnIndex);
+
+            Movement movement = movementsDc.getItems().getFirst();
+            Integer oldVolume = movement.getVolume();
+
+            Method handleCellEdit = controller.getClass().getDeclaredMethod("handleCellEdit", int.class, int.class, Object.class);
+            handleCellEdit.setAccessible(true);
+
+            handleCellEdit.invoke(controller, 0, 0, "WRONG_HEADER");
+            Assertions.assertThat(readCellValue(spreadsheet, 0, 0)).isEqualTo("Date");
+            Assertions.assertThat(editLogField.getValue()).contains("success=false");
+
+            Integer newVolume = oldVolume + 7;
+            long beforeCount = dataManager.loadValue(
+                            "select count(m) from scm_Movement m where m.volume = :volume", Long.class)
+                    .parameter("volume", newVolume)
+                    .one();
+
+            handleCellEdit.invoke(controller, firstDataRow, valueColumnIndex, newVolume);
+
+            Assertions.assertThat(editLogField.getValue()).contains("date=").contains("cell=").contains("entityClass=").contains("entityId=");
+
+            long afterCount = dataManager.loadValue(
+                            "select count(m) from scm_Movement m where m.volume = :volume", Long.class)
+                    .parameter("volume", newVolume)
+                    .one();
+            Assertions.assertThat(afterCount).isGreaterThanOrEqualTo(beforeCount);
+
+            handleCellEdit.invoke(controller, firstDataRow, valueColumnIndex, "invalid-number");
+            Assertions.assertThat(editLogField.getValue()).contains("success=false");
+        } finally {
+            dialog.close();
+        }
+    }
     @SuppressWarnings("unchecked")
     private SpreadsheetTableModel<Movement> readModel(Object controller) throws Exception {
         Field modelField = controller.getClass().getDeclaredField("model");
