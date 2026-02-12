@@ -5,6 +5,7 @@
         <item view="User.list" title="msg://com.digtp.scm.view.user/UserListView.title"/>
         <item view="Shipment.list" title="msg://com.digtp.scm.view.shipment/ShipmentListView.title"/>
         <item view="ShipmentSpreadsheet.list" title="msg://com.digtp.scm.view.shipment/ShipmentSpreadsheetView.title"/>
+        <item view="ShipmentSpreadsheetExampleView" title="msg://com.digtp.scm.view.shipment/ShipmentSpreadsheetExampleView.title"/>
     </menu>
 
 </menu-config>
