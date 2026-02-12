@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      title="Product Packages"
+      focusComponent="productPackagesDataGrid">
+    <data>
+        <collection id="productPackagesDc"
+                    class="com.example.scm.entity.ProductPackage">
+            <fetchPlan extends="_base"/>
+            <loader id="productPackagesDl" readOnly="true">
+                <query>
+                    <![CDATA[select e from scm_ProductPackage e order by e.name]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <actions>
+        <action id="selectAction" type="lookup_select"/>
+        <action id="discardAction" type="lookup_discard"/>
+    </actions>
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+    </facets>
+    <layout>
+        <dataGrid id="productPackagesDataGrid"
+                  width="100%"
+                  minHeight="20em"
+                  dataContainer="productPackagesDc">
+            <columns>
+                <column property="code" header="Code"/>
+                <column property="name" header="Name"/>
+            </columns>
+        </dataGrid>
+        <hbox id="lookupActions" visible="false">
+            <button id="selectButton" action="selectAction"/>
+            <button id="discardButton" action="discardAction"/>
+        </hbox>
+    </layout>
+</view>

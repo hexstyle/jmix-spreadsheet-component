@@ -1,7 +1,7 @@
 package com.hexstyle.jmixspreadsheet.user;
 
-import com.digtp.scm.JmixSpreadsheetApplication;
-import com.digtp.scm.entity.User;
+import com.example.scm.JmixSpreadsheetApplication;
+import com.example.scm.entity.User;
 import com.hexstyle.jmixspreadsheet.test_support.AuthenticatedAsAdmin;
 import io.jmix.core.DataManager;
 import io.jmix.core.security.UserRepository;
