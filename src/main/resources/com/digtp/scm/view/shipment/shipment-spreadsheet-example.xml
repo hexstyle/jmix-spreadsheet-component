@@ -33,13 +33,17 @@
         <vbox id="developerHelp" spacing="false">
             <h4 text="How to configure this example"/>
             <label text="1) Keep query in XML loader and bind spreadsheet to dataLoader=movementsDl."/>
-            <label text="   Example query: select m from scm_Movement m order by m.date desc, m.track.name"/>
-            <label text="2) Configure columns in createTableModel() via single helper method column(...)."/>
-            <label text="   Read-only example: column(&quot;date&quot;, &quot;Date&quot;, Movement::getDate, null)"/>
-            <label text="3) Make Volume editable by passing setter into the same helper method."/>
-            <label text="   Editable example: column(&quot;volume&quot;, &quot;Volume&quot;, Movement::getVolume, (m, v) -> m.setVolume(...))"/>
-            <label text="4) Highlight Volume in purple in onInit(): addStyleRule(...) + withStyleProvider(...)."/>
+            <label text="2) Only purple Value cells are editable. All headers and non-Value cells revert to old value."/>
+            <label text="3) Value accepts only numeric input. Invalid input is rejected and shown in edit log."/>
+            <label text="4) Spreadsheet edit event contains date, cell address, entity class/id, old/new values, success and error."/>
+            <label text="5) Edit log below is filled from Spreadsheet interaction handler (onCellEdit)."/>
         </vbox>
+        <textArea id="editLogField"
+                  width="100%"
+                  minHeight="10em"
+                  maxHeight="14em"
+                  label="Edit log"
+                  readOnly="true"/>
         <spreadsheet:spreadsheet id="movementsSpreadsheet"
                                  dataLoader="movementsDl"
                                  width="100%"

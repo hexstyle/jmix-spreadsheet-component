@@ -524,9 +524,16 @@ public class DefaultSpreadsheetController<E, DC> implements SpreadsheetControlle
      * which is necessary for extracting column axis values when editing empty pivot cells.
      */
     private void updateEditorLayouts() {
-        if (pivotTableEditor != null && currentLayout != null) {
-            pivotTableEditor.updateLayout(currentLayout);
+        if (model == null || layoutIndex == null) {
+            return;
         }
+        if (model.getPivot().isPresent()) {
+            if (pivotTableEditor != null && currentLayout != null) {
+                pivotTableEditor.updateLayout(currentLayout);
+            }
+            return;
+        }
+        flatTableEditor = new FlatTableCellEditor<>(model, layoutIndex, createEntityAdapter());
     }
 
     /**
@@ -675,6 +682,7 @@ public class DefaultSpreadsheetController<E, DC> implements SpreadsheetControlle
         
         // Update layout index BEFORE applying updates (so applyDirectCellUpdates uses new index with fresh values)
         this.layoutIndex = newLayoutIndex;
+        updateEditorLayouts();
         
         // Find all cells connected to the affected entities using the layout index
         // The PivotEditStrategy already provides the affected entities, so we just need to
@@ -1209,103 +1217,161 @@ public class DefaultSpreadsheetController<E, DC> implements SpreadsheetControlle
     }
 
     private void handleCellEdit(int row, int col, Object newValue) {
-        // If newValue is null, try to read it from the spreadsheet component
         if (newValue == null && component instanceof com.vaadin.flow.component.spreadsheet.Spreadsheet) {
             newValue = readCellValueFromComponent((com.vaadin.flow.component.spreadsheet.Spreadsheet) component, row, col);
         }
-        
-        // Determine if this is a pivot cell or flat table cell
+
+        java.time.Instant eventTime = java.time.Instant.now();
+
         if (layoutIndex == null) {
             logger.warning("Cell edit ignored: Layout index not available");
+            notifyCellEditEvent(row, col, null, null, newValue, false, "Layout index not available", eventTime);
             return;
         }
-        
-        LayoutIndex.CellRef cellRef = createCellRef(row, col);
-        CellBinding<E> binding = layoutIndex.getCellBinding(cellRef);
-        
+
+        BindingResolution<E> resolution = resolveCellBinding(row, col);
+        CellBinding<E> binding = resolution.binding();
+
         if (binding == null) {
-            // Cell not found - might be a header or invalid cell
             logger.fine("Cell edit ignored: Cell not found in layout index at row=" + row + ", col=" + col);
+            reload();
+            notifyCellEditEvent(row, col, null, null, newValue, false,
+                    "Cell not found. Spreadsheet was reloaded to restore original values", eventTime);
             return;
         }
-        
-        // Check if cell is editable before processing
+
+        int actualRow = resolution.row();
+        int actualCol = resolution.col();
+        Object oldValue = binding.getValue();
+
         if (!isCellEditable(binding)) {
-            logger.fine("Cell edit ignored: Cell is not editable at row=" + row + ", col=" + col);
-            // Revert the cell value to the original value from binding
-            revertCellValue(row, col, binding);
+            logger.fine("Cell edit ignored: Cell is not editable at row=" + actualRow + ", col=" + actualCol);
+            revertCellValue(actualRow, actualCol, binding);
+            notifyCellEditEvent(actualRow, actualCol, binding, oldValue, newValue, false,
+                    "Cell is read-only. Only editable columns can be changed", eventTime);
             return;
         }
-        
+
         try {
-            // Get entity key provider for tracking affected entities
             java.util.function.Function<E, Object> entityKeyProvider = io.jmix.core.entity.EntityValues::getId;
             java.util.Set<Object> affectedEntityKeys = new java.util.HashSet<>();
-            
-            // Check if it's a pivot cell
-            java.util.Set<E> affectedEntities = null;
+
+            java.util.Set<E> affectedEntities;
             if (binding.getPivotContext() != null && binding instanceof PivotCellBinding) {
-                // Handle pivot cell edit
-                if (pivotTableEditor != null) {
-                    // Pass the binding directly to avoid re-lookup
-                    PivotCellBinding<E> pivotBinding = (PivotCellBinding<E>) binding;
-                    
-                    // Call handleCellEdit which will apply the edits
-                    pivotTableEditor.handleCellEdit(row, col, newValue, pivotBinding);
-                    
-                    // Get all entities that were affected by the edit (from the edits map)
-                    // This includes source entities AND any additional entities modified by the strategy
-                    // (e.g., subsequent shipments for cumulative sum updates)
-                    affectedEntities = pivotTableEditor.getLastAffectedEntities();
-                } else {
+                if (pivotTableEditor == null) {
                     logger.warning("Pivot cell edit ignored: No edit strategy configured");
+                    revertCellValue(actualRow, actualCol, binding);
+                    notifyCellEditEvent(actualRow, actualCol, binding, oldValue, newValue, false,
+                            "No pivot edit strategy configured", eventTime);
                     return;
                 }
+                PivotCellBinding<E> pivotBinding = (PivotCellBinding<E>) binding;
+                pivotTableEditor.handleCellEdit(actualRow, actualCol, newValue, pivotBinding);
+                affectedEntities = pivotTableEditor.getLastAffectedEntities();
             } else if (binding.getEntityRef() != null) {
-                // Handle flat table cell edit
-                flatTableEditor.handleCellEdit(row, col, newValue);
-                
-                // Track the affected entity for flat table cells
+                applyFlatCellEdit(binding, actualCol, newValue);
                 affectedEntities = java.util.Collections.singleton(binding.getEntityRef());
             } else {
-                // Header cell or non-editable cell - ignore
+                revertCellValue(actualRow, actualCol, binding);
+                notifyCellEditEvent(actualRow, actualCol, binding, oldValue, newValue, false,
+                        "Cell is not bound to editable data", eventTime);
                 return;
             }
-            
-            // Set flag to suppress data change listeners during cell edit processing
-            // (we handle updates via updateAffectedCells instead)
+
             processingCellEdit = true;
             try {
-                // Auto-save changes to database after successful edit
-                // This will assign IDs to new entities and persist changes
                 saveEntities(affectedEntities);
-                
-                // Get entity keys AFTER save() so new entities have IDs
-                // This ensures new entities are included in the incremental update
                 for (E entity : affectedEntities) {
                     Object entityKey = entityKeyProvider.apply(entity);
                     if (entityKey != null) {
                         affectedEntityKeys.add(entityKey);
                     }
                 }
-                
-                // Apply incremental update for affected entities
-                // This will rebuild layout with fresh values and update only changed cells
+
                 if (!affectedEntityKeys.isEmpty()) {
                     updateAffectedCells(affectedEntityKeys);
                 } else {
-                    // If no entity keys tracked (shouldn't happen after save, but handle gracefully),
-                    // do a full reload to ensure everything is updated
                     reload();
                 }
             } finally {
-                // Always clear the flag, even if an exception occurs
                 processingCellEdit = false;
             }
+            notifyCellEditEvent(actualRow, actualCol, binding, oldValue, newValue, true, null, eventTime);
         } catch (Exception e) {
-            logger.severe("Error handling cell edit: " + e.getMessage());
-            throw new RuntimeException("Failed to save cell edit: " + e.getMessage(), e);
+            logger.warning("Error handling cell edit at row=" + actualRow + ", col=" + actualCol + ": " + e.getMessage());
+            revertCellValue(actualRow, actualCol, binding);
+            notifyCellEditEvent(actualRow, actualCol, binding, oldValue, newValue, false, e.getMessage(), eventTime);
         }
+    }
+
+    private BindingResolution<E> resolveCellBinding(int row, int col) {
+        if (layoutIndex == null) {
+            return new BindingResolution<>(row, col, null);
+        }
+
+        CellBinding<E> binding = layoutIndex.getCellBinding(createCellRef(row, col));
+        if (binding != null) {
+            return new BindingResolution<>(row, col, binding);
+        }
+
+        if (row > 0 && col > 0) {
+            CellBinding<E> shifted = layoutIndex.getCellBinding(createCellRef(row - 1, col - 1));
+            if (shifted != null) {
+                logger.fine("Resolved edited cell using 1-based fallback coordinates: inputRow="
+                        + row + ", inputCol=" + col + " -> row=" + (row - 1) + ", col=" + (col - 1));
+                return new BindingResolution<>(row - 1, col - 1, shifted);
+            }
+        }
+
+        return new BindingResolution<>(row, col, null);
+    }
+
+    private record BindingResolution<T>(int row, int col, CellBinding<T> binding) {
+    }
+
+
+    private void applyFlatCellEdit(CellBinding<E> binding, int columnIndex, Object newValue) {
+        E entity = binding.getEntityRef();
+        if (entity == null) {
+            throw new IllegalStateException("Cell is not bound to an entity");
+        }
+        var columns = model.getColumns();
+        if (columns == null || columnIndex < 0 || columnIndex >= columns.size()) {
+            throw new IllegalArgumentException("Column not found at index: " + columnIndex);
+        }
+        var column = columns.get(columnIndex);
+        if (column == null || !column.isEditable()) {
+            throw new IllegalArgumentException("Column is not editable at index: " + columnIndex);
+        }
+        var setter = column.getSetter();
+        if (setter == null) {
+            throw new IllegalArgumentException("Column does not have a setter: " + column.getId());
+        }
+        setter.accept(entity, newValue);
+    }
+
+    private void notifyCellEditEvent(int row,
+                                     int col,
+                                     CellBinding<E> binding,
+                                     Object oldValue,
+                                     Object newValue,
+                                     boolean success,
+                                     String errorText,
+                                     java.time.Instant eventTime) {
+        if (model == null || model.getInteractionHandler() == null) {
+            return;
+        }
+        SpreadsheetInteractionBridge.handleCellEdit(
+                row,
+                col,
+                model.getInteractionHandler(),
+                layoutIndex,
+                eventTime,
+                oldValue,
+                newValue,
+                success,
+                errorText
+        );
     }
     
     /**

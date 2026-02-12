@@ -44,6 +44,37 @@ public final class SpreadsheetInteractionBridge {
         handler.onCellClick(context);
     }
 
+
+
+    public static <E> void handleCellEdit(int row,
+                                          int column,
+                                          SpreadsheetInteractionHandler<E> handler,
+                                          LayoutIndex<E> layoutIndex,
+                                          java.time.Instant timestamp,
+                                          Object oldValue,
+                                          Object newValue,
+                                          boolean success,
+                                          String errorText) {
+        if (handler == null) {
+            return;
+        }
+        CellBinding<E> binding = null;
+        if (layoutIndex != null) {
+            binding = layoutIndex.getCellBinding(new CellRefImpl(row, column));
+        }
+        InteractionContextImpl<E> context = new InteractionContextImpl<>(
+                row,
+                column,
+                binding,
+                java.util.Set.of(),
+                timestamp,
+                oldValue,
+                newValue,
+                success,
+                errorText
+        );
+        handler.onCellEdit(context);
+    }
     private static final class CellRefImpl implements LayoutIndex.CellRef {
         private final int row;
         private final int column;

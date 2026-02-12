@@ -14,6 +14,7 @@ import org.apache.poi.ss.util.CellReference;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -56,6 +57,35 @@ class SpreadsheetInteractionHandlerTest {
         Assertions.assertThat(impl.getCellBinding()).isSameAs(binding);
     }
 
+
+
+    @Test
+    void editBridgeProvidesEditMetadata() {
+        DefaultCellBinding<String> binding =
+                new DefaultCellBinding<>(1, 1, "old", null, "entity-2");
+        SpreadsheetLayout<String> layout = new TestLayout<>(List.of(binding));
+        LayoutIndex<String> index = new DefaultLayoutIndex<>(layout, entity -> entity);
+
+        List<SpreadsheetInteractionHandler.InteractionContext<String>> contexts = new ArrayList<>();
+        SpreadsheetInteractionHandler<String> handler = new SpreadsheetInteractionHandler<>() {
+            @Override
+            public void onCellEdit(InteractionContext<String> context) {
+                contexts.add(context);
+            }
+        };
+
+        Instant ts = Instant.parse("2026-02-12T10:15:30Z");
+        SpreadsheetInteractionBridge.handleCellEdit(1, 1, handler, index, ts, "old", "123", true, null);
+
+        Assertions.assertThat(contexts).hasSize(1);
+        SpreadsheetInteractionHandler.InteractionContext<String> context = contexts.get(0);
+        Assertions.assertThat(context.getEntity()).isEqualTo("entity-2");
+        Assertions.assertThat(context.getEditTimestamp()).isEqualTo(ts);
+        Assertions.assertThat(context.getOldValue()).isEqualTo("old");
+        Assertions.assertThat(context.getNewValue()).isEqualTo("123");
+        Assertions.assertThat(context.isEditSuccessful()).isTrue();
+        Assertions.assertThat(context.getEditError()).isNull();
+    }
     private static final class TestLayout<E> implements SpreadsheetLayout<E> {
         private final List<CellBinding<E>> bindings;
 
