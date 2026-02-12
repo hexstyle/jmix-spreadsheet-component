@@ -47,7 +47,7 @@ public class ShipmentSpreadsheetExampleView extends StandardView {
                 column("product", "Product", movement -> nested(movement, "product.name")),
                 column("originPlant", "Plant", movement -> nested(movement, "originPlant.name")),
                 column("package", "Package", movement -> nested(movement, "productPackage.name")),
-                column("reason", "Reason", movement -> nested(movement, "reason.name")),
+                column("reason", "Reason", this::reasonLabel),
                 column("volume", "Volume", Movement::getVolume),
                 column("fact", "Fact", Movement::getIsFact)
         );
@@ -75,6 +75,14 @@ public class ShipmentSpreadsheetExampleView extends StandardView {
                 SpreadsheetColumn.Alignment.LEFT,
                 false
         );
+    }
+
+
+    private Object reasonLabel(Movement movement) {
+        if (movement == null || movement.getReason() == null) {
+            return null;
+        }
+        return movement.getReason().getClass().getSimpleName();
     }
 
     private Object nested(Movement movement, String propertyPath) {
