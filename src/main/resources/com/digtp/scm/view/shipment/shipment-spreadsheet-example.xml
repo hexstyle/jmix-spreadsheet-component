@@ -30,12 +30,17 @@
         <dataLoadCoordinator auto="true"/>
     </facets>
     <layout>
+        <vbox id="developerHelp" spacing="false">
+            <h4 text="How to configure this example"/>
+            <label text="1) Keep the movement query in this XML loader and bind it to the spreadsheet via dataLoader."/>
+            <label text="2) Configure columns in ShipmentSpreadsheetExampleView#createTableModel()."/>
+            <label text="3) Only Volume is editable and highlighted with a style rule in onInit()."/>
+        </vbox>
         <spreadsheet:spreadsheet id="movementsSpreadsheet"
                                  dataLoader="movementsDl"
                                  width="100%"
                                  height="100%"
                                  minHeight="26em"
-                                 readOnly="true"
                                  headerStyle="background-color:#E0ECFF;color:#102A43;font-weight:700;"/>
     </layout>
 </view>

@@ -1,12 +1,16 @@
 package com.digtp.scm.ui;
 
 import com.digtp.scm.JmixSpreadsheetApplication;
+import com.digtp.scm.entity.Movement;
 import com.digtp.scm.portbalance.data.TestDataFactory;
+import com.hexstyle.jmixspreadsheet.api.SpreadsheetColumn;
+import com.hexstyle.jmixspreadsheet.api.SpreadsheetTableModel;
 import com.hexstyle.jmixspreadsheet.internal.DefaultSpreadsheetController;
 import com.hexstyle.jmixspreadsheet.ui.component.SpreadsheetComponent;
 import com.vaadin.flow.component.spreadsheet.Spreadsheet;
 import io.jmix.core.DataManager;
 import io.jmix.flowui.DialogWindows;
+import io.jmix.flowui.model.CollectionContainer;
 import io.jmix.flowui.testassist.FlowuiTestAssistConfiguration;
 import io.jmix.flowui.testassist.UiTest;
 import io.jmix.flowui.testassist.UiTestUtils;
@@ -15,10 +19,15 @@ import io.jmix.flowui.view.View;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.lang.reflect.Field;
+import java.util.List;
 
 @UiTest
 @SpringBootTest(
@@ -34,7 +43,7 @@ class ShipmentSpreadsheetExampleViewUiTest {
     private DataManager dataManager;
 
     @Test
-    void exampleViewOpensAndRendersFlatMovementTable() {
+    void exampleViewOpensAndSupportsOnlyVolumeEditing() throws Exception {
         TestDataFactory factory = new TestDataFactory(dataManager);
         factory.ensureJanuary2026PortBalanceData();
 
@@ -53,9 +62,92 @@ class ShipmentSpreadsheetExampleViewUiTest {
             Assertions.assertThat(spreadsheetContains(spreadsheet, "Reason")).isTrue();
             Assertions.assertThat(spreadsheetContains(spreadsheet, "Volume")).isTrue();
             Assertions.assertThat(spreadsheetContains(spreadsheet, "VesselLoadingReason")).isTrue();
+
+            SpreadsheetTableModel<Movement> model = readModel(spreadsheetComponent.getController());
+            List<SpreadsheetColumn<Movement>> columns = model.getColumns();
+            SpreadsheetColumn<Movement> volumeColumn = columns.stream()
+                    .filter(column -> "volume".equals(column.getId()))
+                    .findFirst()
+                    .orElseThrow();
+            SpreadsheetColumn<Movement> dateColumn = columns.stream()
+                    .filter(column -> "date".equals(column.getId()))
+                    .findFirst()
+                    .orElseThrow();
+
+            Assertions.assertThat(volumeColumn.isEditable()).isTrue();
+            Assertions.assertThat(volumeColumn.getSetter()).isNotNull();
+            Assertions.assertThat(dateColumn.isEditable()).isFalse();
+            Assertions.assertThat(dateColumn.getSetter()).isNull();
+
+            CollectionContainer<Movement> movementsDc = readMovementsContainer(view);
+            Movement movement = movementsDc.getItems().getFirst();
+            Integer oldVolume = movement.getVolume();
+            Object oldDate = movement.getDate();
+
+            volumeColumn.getSetter().accept(movement, oldVolume + 5);
+            Assertions.assertThat(movement.getVolume()).isEqualTo(oldVolume + 5);
+
+            if (dateColumn.getSetter() != null) {
+                dateColumn.getSetter().accept(movement, "2099-01-01");
+            }
+            Assertions.assertThat(movement.getDate()).isEqualTo(oldDate);
+
+            int volumeColumnIndex = findColumnIndex(spreadsheet, "Volume");
+            int firstDataRow = findFirstDataRow(spreadsheet, volumeColumnIndex);
+            Assertions.assertThat(isPurpleText(spreadsheet.getCell(firstDataRow, volumeColumnIndex))).isTrue();
         } finally {
             dialog.close();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private SpreadsheetTableModel<Movement> readModel(Object controller) throws Exception {
+        Field modelField = controller.getClass().getDeclaredField("model");
+        modelField.setAccessible(true);
+        return (SpreadsheetTableModel<Movement>) modelField.get(controller);
+    }
+
+    @SuppressWarnings("unchecked")
+    private CollectionContainer<Movement> readMovementsContainer(View<?> view) throws Exception {
+        Field containerField = view.getClass().getDeclaredField("movementsDc");
+        containerField.setAccessible(true);
+        return (CollectionContainer<Movement>) containerField.get(view);
+    }
+
+    private int findColumnIndex(Spreadsheet spreadsheet, String header) {
+        Sheet sheet = spreadsheet.getWorkbook().getSheetAt(0);
+        Row headerRow = sheet.getRow(0);
+        for (int col = headerRow.getFirstCellNum(); col < headerRow.getLastCellNum(); col++) {
+            Cell cell = headerRow.getCell(col);
+            if (cell != null && header.equals(readCellValue(spreadsheet, 0, col))) {
+                return col;
+            }
+        }
+        throw new IllegalStateException("Header not found: " + header);
+    }
+
+    private int findFirstDataRow(Spreadsheet spreadsheet, int volumeColumnIndex) {
+        Sheet sheet = spreadsheet.getWorkbook().getSheetAt(0);
+        for (int row = 1; row <= sheet.getLastRowNum(); row++) {
+            String value = readCellValue(spreadsheet, row, volumeColumnIndex);
+            if (value.matches("-?\\d+")) {
+                return row;
+            }
+        }
+        throw new IllegalStateException("No data rows found");
+    }
+
+    private String readCellValue(Spreadsheet spreadsheet, int rowIndex, int colIndex) {
+        Cell cell = spreadsheet.getCell(rowIndex, colIndex);
+        if (cell == null) {
+            return "";
+        }
+        return switch (cell.getCellType()) {
+            case STRING -> cell.getStringCellValue();
+            case NUMERIC -> String.valueOf((int) cell.getNumericCellValue());
+            case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
+            default -> "";
+        };
     }
 
     private boolean spreadsheetContains(Spreadsheet spreadsheet, String expected) {
@@ -73,17 +165,25 @@ class ShipmentSpreadsheetExampleViewUiTest {
                 if (cell == null) {
                     continue;
                 }
-                String value = switch (cell.getCellType()) {
-                    case STRING -> cell.getStringCellValue();
-                    case NUMERIC -> String.valueOf((long) cell.getNumericCellValue());
-                    case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
-                    default -> "";
-                };
-                if (expected.equals(value)) {
+                if (expected.equals(readCellValue(spreadsheet, rowIndex, colIndex))) {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    private boolean isPurpleText(Cell cell) {
+        if (!(cell.getCellStyle() instanceof XSSFCellStyle style)) {
+            return false;
+        }
+        XSSFFont font = style.getFont();
+        if (font == null || font.getXSSFColor() == null || font.getXSSFColor().getRGB() == null) {
+            return false;
+        }
+        byte[] rgb = font.getXSSFColor().getRGB();
+        return (rgb[0] & 0xFF) == 0x7C
+                && (rgb[1] & 0xFF) == 0x3A
+                && (rgb[2] & 0xFF) == 0xED;
     }
 }
