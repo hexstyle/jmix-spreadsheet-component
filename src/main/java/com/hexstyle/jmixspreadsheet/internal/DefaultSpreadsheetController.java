@@ -1314,15 +1314,6 @@ public class DefaultSpreadsheetController<E, DC> implements SpreadsheetControlle
             return new BindingResolution<>(row, col, binding);
         }
 
-        if (row > 0 && col > 0) {
-            CellBinding<E> shifted = layoutIndex.getCellBinding(createCellRef(row - 1, col - 1));
-            if (shifted != null) {
-                logger.fine("Resolved edited cell using 1-based fallback coordinates: inputRow="
-                        + row + ", inputCol=" + col + " -> row=" + (row - 1) + ", col=" + (col - 1));
-                return new BindingResolution<>(row - 1, col - 1, shifted);
-            }
-        }
-
         return new BindingResolution<>(row, col, null);
     }
 
