@@ -1,8 +1,15 @@
 pluginManagement {
     repositories {
-        maven { url 'https://repo.jmix.io/repository/public' }
+        maven { url 'https://nexus.jmix.io/repository/public' }
         gradlePluginPortal()
         mavenCentral()
+    }
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id == 'io.jmix') {
+                useModule("io.jmix.gradle:jmix-gradle-plugin:${requested.version}")
+            }
+        }
     }
 }
 
