@@ -150,6 +150,7 @@ public class PortBalanceLayoutBuilder implements LayoutEngine<PortBalanceCell> {
 
             String comboId = comboKeyId(key.comboKey());
             if (!Objects.equals(currentComboId, comboId)) {
+                closeHeaderGroup(1, trackStart, columnIndex - 1, currentTrack, mergedRegions);
                 closeHeaderGroup(0, comboStart, columnIndex - 1, currentCombo, mergedRegions);
                 currentCombo = key.comboKey();
                 currentComboId = comboId;
@@ -163,6 +164,7 @@ public class PortBalanceLayoutBuilder implements LayoutEngine<PortBalanceCell> {
                         null
                 ));
                 currentTrack = null;
+                currentTrackId = null;
                 trackStart = columnIndex;
             }
 

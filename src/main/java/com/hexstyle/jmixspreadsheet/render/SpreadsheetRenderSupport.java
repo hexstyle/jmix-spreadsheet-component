@@ -3,8 +3,8 @@ package com.hexstyle.jmixspreadsheet.render;
 import com.hexstyle.jmixspreadsheet.layout.CellBinding;
 import com.hexstyle.jmixspreadsheet.layout.SpreadsheetLayout;
 import com.vaadin.flow.component.spreadsheet.Spreadsheet;
+import org.apache.poi.ss.usermodel.Sheet;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
@@ -33,12 +33,26 @@ public final class SpreadsheetRenderSupport {
         if (spreadsheet == null || layout == null) {
             return;
         }
-        ensureViewportRange(spreadsheet, layout);
         try {
+            recalculateSheetSizes(spreadsheet);
+            refreshMergedRegions(spreadsheet);
+            if (hasVisibleRange(spreadsheet)) {
+                spreadsheet.reloadVisibleCellContents();
+            }
             spreadsheet.refreshAllCellValues();
         } catch (Exception e) {
             logger.warning("Failed to refresh spreadsheet viewport: " + e.getMessage());
         }
+    }
+
+    public static void refreshViewportAfterLayout(Spreadsheet spreadsheet, SpreadsheetLayout<?> layout) {
+        if (spreadsheet == null || layout == null) {
+            return;
+        }
+        spreadsheet.getUI().ifPresentOrElse(
+                ui -> ui.beforeClientResponse(spreadsheet, context -> refreshViewport(spreadsheet, layout)),
+                () -> refreshViewport(spreadsheet, layout)
+        );
     }
 
     public static void refreshGrouping(Spreadsheet spreadsheet,
@@ -107,33 +121,38 @@ public final class SpreadsheetRenderSupport {
         return null;
     }
 
-    private static void ensureViewportRange(Spreadsheet spreadsheet, SpreadsheetLayout<?> layout) {
-        int expectedColumns = layout.getColumnCount();
-        int expectedRows = layout.getRowCount();
-        if (expectedColumns <= 1 && expectedRows <= 1) {
-            return;
-        }
+    private static boolean hasVisibleRange(Spreadsheet spreadsheet) {
         int firstColumn = spreadsheet.getFirstColumn();
         int lastColumn = spreadsheet.getLastColumn();
         int firstRow = spreadsheet.getFirstRow();
         int lastRow = spreadsheet.getLastRow();
-        if (firstColumn > 0 && lastColumn > 1 && firstRow > 0 && lastRow > 1) {
-            return;
-        }
+        return firstColumn > 0
+                && firstRow > 0
+                && lastColumn >= firstColumn
+                && lastRow >= firstRow;
+    }
+
+    private static void refreshMergedRegions(Spreadsheet spreadsheet) {
         try {
-            setViewportField(spreadsheet, "firstColumn", 1);
-            setViewportField(spreadsheet, "lastColumn", Math.max(1, expectedColumns));
-            setViewportField(spreadsheet, "firstRow", 1);
-            setViewportField(spreadsheet, "lastRow", Math.max(1, expectedRows));
-        } catch (ReflectiveOperationException e) {
-            logger.warning("Failed to initialize spreadsheet viewport: " + e.getMessage());
+            spreadsheet.reloadAllMergedRegions();
+        } catch (Exception e) {
+            logger.warning("Failed to refresh spreadsheet merged regions: " + e.getMessage());
         }
     }
 
-    private static void setViewportField(Spreadsheet spreadsheet, String fieldName, int value)
-            throws ReflectiveOperationException {
-        Field field = Spreadsheet.class.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.setInt(spreadsheet, value);
+    private static void recalculateSheetSizes(Spreadsheet spreadsheet) {
+        try {
+            Class<?> factory = Class.forName("com.vaadin.flow.component.spreadsheet.SpreadsheetFactory");
+            Method calculateSheetSizes = factory.getDeclaredMethod(
+                    "calculateSheetSizes",
+                    Spreadsheet.class,
+                    Sheet.class
+            );
+            calculateSheetSizes.setAccessible(true);
+            calculateSheetSizes.invoke(null, spreadsheet, spreadsheet.getActiveSheet());
+        } catch (ReflectiveOperationException e) {
+            logger.warning("Failed to recalculate spreadsheet sheet sizes: " + e.getMessage());
+        }
     }
+
 }

@@ -90,14 +90,11 @@ public class LayoutSpreadsheetController<E> implements SpreadsheetController<E, 
         }
         this.currentLayout = layout;
 
+        renderer.render(spreadsheet, currentLayout);
         if (config.resolveAutoResize(true)) {
             SpreadsheetRenderSupport.resizeSheet(spreadsheet, currentLayout);
         }
-        renderer.render(spreadsheet, currentLayout);
 
-        if (config.resolveAutoRefreshViewport(true)) {
-            SpreadsheetRenderSupport.refreshViewport(spreadsheet, currentLayout);
-        }
         SpreadsheetRenderSupport.applyHeaderColumnWidths(
                 spreadsheet,
                 currentLayout,
@@ -112,6 +109,9 @@ public class LayoutSpreadsheetController<E> implements SpreadsheetController<E, 
 
         if (config.getAfterRender() != null) {
             config.getAfterRender().accept(spreadsheet);
+        }
+        if (config.resolveAutoRefreshViewport(true)) {
+            SpreadsheetRenderSupport.refreshViewportAfterLayout(spreadsheet, currentLayout);
         }
     }
 

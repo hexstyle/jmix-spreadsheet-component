@@ -422,9 +422,6 @@ public class SpreadsheetComponent<E> extends Composite<Div> implements HasSize {
                     if (autoResize) {
                         com.hexstyle.jmixspreadsheet.render.SpreadsheetRenderSupport.resizeSheet(component, layout);
                     }
-                    if (autoRefreshViewport) {
-                        com.hexstyle.jmixspreadsheet.render.SpreadsheetRenderSupport.refreshViewport(component, layout);
-                    }
                     if (config.getMode() == SpreadsheetComponentConfig.Mode.TABLE) {
                         java.util.List<com.hexstyle.jmixspreadsheet.api.SpreadsheetColumn<E>> columns =
                                 config.resolveModel().getColumns();
@@ -449,6 +446,9 @@ public class SpreadsheetComponent<E> extends Composite<Div> implements HasSize {
                     );
                     if (config.getAfterRender() != null) {
                         config.getAfterRender().accept(component);
+                    }
+                    if (autoRefreshViewport) {
+                        com.hexstyle.jmixspreadsheet.render.SpreadsheetRenderSupport.refreshViewport(component, layout);
                     }
                 }
             };

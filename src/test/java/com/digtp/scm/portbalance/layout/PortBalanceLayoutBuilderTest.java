@@ -23,6 +23,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 class PortBalanceLayoutBuilderTest {
@@ -142,6 +143,47 @@ class PortBalanceLayoutBuilderTest {
         Assertions.assertThat(cellStyle(layout, 3, 4)).contains("#2563EB");
     }
 
+    @Test
+    void closesTrackGroupsBetweenCombinationsWithSameTrack() {
+        ShippingCombination comboA = newCombination();
+        comboA.getPlant().setCode("PLT-A");
+        comboA.getPlant().setName("Plant A");
+
+        ShippingCombination comboB = newCombination();
+        comboB.getPlant().setCode("PLT-B");
+        comboB.getPlant().setName("Plant B");
+
+        Track sharedTrack = newTrack("PB26 Track");
+
+        List<PortBalanceColumnKey> columns = new ArrayList<>();
+        columns.add(PortBalanceColumnKey.of(null, null, PortBalanceMetric.VESSEL));
+        columns.add(PortBalanceColumnKey.of(null, null, PortBalanceMetric.LAYCAN));
+        columns.add(PortBalanceColumnKey.of(null, null, PortBalanceMetric.TOTAL_OUT));
+        columns.add(PortBalanceColumnKey.from(comboA, sharedTrack, PortBalanceMetric.IN));
+        columns.add(PortBalanceColumnKey.from(comboA, sharedTrack, PortBalanceMetric.OUT));
+        columns.add(PortBalanceColumnKey.from(comboA, sharedTrack, PortBalanceMetric.STOCK));
+        columns.add(PortBalanceColumnKey.from(comboB, sharedTrack, PortBalanceMetric.IN));
+        columns.add(PortBalanceColumnKey.from(comboB, sharedTrack, PortBalanceMetric.OUT));
+        columns.add(PortBalanceColumnKey.from(comboB, sharedTrack, PortBalanceMetric.STOCK));
+
+        PortBalanceTable table = new PortBalanceTable(
+                List.of(PortBalanceRow.dateRow(LocalDate.of(2026, 2, 1))),
+                columns,
+                List.of()
+        );
+
+        PortBalanceLayout layout = builder.buildLayout(table);
+
+        String expectedTrackLabel = builder.formatTrackLabel(com.digtp.scm.portbalance.columns.TrackKey.from(sharedTrack));
+        Assertions.assertThat(cellValue(layout, 1, 4)).isEqualTo(expectedTrackLabel);
+        Assertions.assertThat(cellValue(layout, 1, 7)).isEqualTo(expectedTrackLabel);
+        Assertions.assertThat(cellValue(layout, 2, 6)).isEqualTo("STOCK");
+        Assertions.assertThat(cellValue(layout, 2, 9)).isEqualTo("STOCK");
+
+        Assertions.assertThat(hasMergedRegion(layout, 1, 1, 4, 6)).isTrue();
+        Assertions.assertThat(hasMergedRegion(layout, 1, 1, 7, 9)).isTrue();
+    }
+
     private Object cellValue(PortBalanceLayout layout, int row, int column) {
         var binding = cellBinding(layout, row, column);
         return binding == null ? null : binding.getValue();
@@ -159,6 +201,18 @@ class PortBalanceLayoutBuilderTest {
                 .filter(binding -> binding.getRowIndex() == row && binding.getColumnIndex() == column)
                 .findFirst()
                 .orElse(null);
+    }
+
+    private boolean hasMergedRegion(PortBalanceLayout layout,
+                                    int firstRow,
+                                    int lastRow,
+                                    int firstColumn,
+                                    int lastColumn) {
+        return layout.getMergedRegions().stream()
+                .anyMatch(region -> region.getFirstRow() == firstRow
+                        && region.getLastRow() == lastRow
+                        && region.getFirstColumn() == firstColumn
+                        && region.getLastColumn() == lastColumn);
     }
 
     private ShippingCombination newCombination() {

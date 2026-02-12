@@ -27,14 +27,19 @@ import io.jmix.core.Messages;
 import org.assertj.core.api.Assertions;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @UiTest
 @SpringBootTest(
@@ -310,6 +315,238 @@ class ShipmentSpreadsheetViewUiTest {
     }
 
     @Test
+    void removingStockKeepsSecondLevelTrackHeadersAndCorrectGrouping() {
+        TestDataFactory factory = new TestDataFactory(dataManager);
+        January2026PortBalanceData data = factory.ensureJanuary2026PortBalanceData();
+
+        View<?> origin = UiTestUtils.getCurrentView();
+        DialogWindow<View<?>> dialog = dialogWindows.view(origin, "ShipmentSpreadsheet.list").open();
+
+        try {
+            View<?> view = dialog.getView();
+            GenericFilter filter = UiTestUtils.getComponent(view, "genericFilter");
+            Assertions.assertThat(filter).isNotNull();
+
+            if (filter.getCurrentConfiguration() == filter.getEmptyConfiguration()) {
+                var defaultConfiguration = filter.getConfiguration("defaultConfiguration");
+                if (defaultConfiguration != null) {
+                    filter.setCurrentConfiguration(defaultConfiguration);
+                }
+            }
+            filter.setAutoApply(false);
+
+            PropertyFilter<LocalDate> dateFromFilter = castFilter(findPropertyFilter(
+                    filter, "date", PropertyFilter.Operation.GREATER_OR_EQUAL));
+            PropertyFilter<LocalDate> dateToFilter = castFilter(findPropertyFilter(
+                    filter, "date", PropertyFilter.Operation.LESS_OR_EQUAL));
+            PropertyFilter<com.digtp.scm.entity.Track> trackFilter = castFilter(
+                    findPropertyFilter(filter, "track", PropertyFilter.Operation.EQUAL));
+            PropertyFilter<com.digtp.scm.entity.Terminal> terminalFilter = castFilter(
+                    findPropertyFilter(filter, "warehouse.terminal", PropertyFilter.Operation.EQUAL));
+
+            dateFromFilter.setValue(LocalDate.of(2026, 1, 1));
+            dateToFilter.setValue(LocalDate.of(2026, 1, 10));
+            trackFilter.setValue(null);
+            terminalFilter.setValue(data.terminal());
+
+            SpreadsheetComponent<?> spreadsheetComponent = UiTestUtils.getComponent(view, "shipmentsSpreadsheet");
+            MultiSelectComboBox<PortBalanceMetric> metrics =
+                    UiTestUtils.getComponent(view, "metricsSelector");
+            filter.getDataLoader().load();
+
+            Spreadsheet spreadsheet = spreadsheetComponent.getSpreadsheet();
+            Assertions.assertThat(spreadsheet).isNotNull();
+            Assertions.assertThat(rowContains(spreadsheet, 2, "STOCK")).isTrue();
+            Assertions.assertThat(rowContains(spreadsheet, 2, "IN")).isTrue();
+            Assertions.assertThat(rowContains(spreadsheet, 2, "OUT")).isTrue();
+
+            metrics.setValue(EnumSet.of(PortBalanceMetric.IN, PortBalanceMetric.OUT));
+            spreadsheetComponent.reload();
+
+            Assertions.assertThat(rowContains(spreadsheet, 2, "STOCK")).isFalse();
+            assertTrackHeaderGrouping(spreadsheet, "PB26 Track BASIC");
+            assertTrackHeaderGrouping(spreadsheet, "PB26 Track Plan PLANNING");
+            assertClientMergedRegionsInSync(spreadsheet);
+        } finally {
+            dialog.close();
+        }
+    }
+
+    @Test
+    void singleMetricAcrossTracksKeepsSecondLevelHeadersStable() {
+        TestDataFactory factory = new TestDataFactory(dataManager);
+        January2026PortBalanceData data = factory.ensureJanuary2026PortBalanceData();
+
+        View<?> origin = UiTestUtils.getCurrentView();
+        DialogWindow<View<?>> dialog = dialogWindows.view(origin, "ShipmentSpreadsheet.list").open();
+
+        try {
+            View<?> view = dialog.getView();
+            GenericFilter filter = UiTestUtils.getComponent(view, "genericFilter");
+            Assertions.assertThat(filter).isNotNull();
+
+            if (filter.getCurrentConfiguration() == filter.getEmptyConfiguration()) {
+                var defaultConfiguration = filter.getConfiguration("defaultConfiguration");
+                if (defaultConfiguration != null) {
+                    filter.setCurrentConfiguration(defaultConfiguration);
+                }
+            }
+            filter.setAutoApply(false);
+
+            PropertyFilter<LocalDate> dateFromFilter = castFilter(findPropertyFilter(
+                    filter, "date", PropertyFilter.Operation.GREATER_OR_EQUAL));
+            PropertyFilter<LocalDate> dateToFilter = castFilter(findPropertyFilter(
+                    filter, "date", PropertyFilter.Operation.LESS_OR_EQUAL));
+            PropertyFilter<com.digtp.scm.entity.Track> trackFilter = castFilter(
+                    findPropertyFilter(filter, "track", PropertyFilter.Operation.EQUAL));
+            PropertyFilter<com.digtp.scm.entity.Terminal> terminalFilter = castFilter(
+                    findPropertyFilter(filter, "warehouse.terminal", PropertyFilter.Operation.EQUAL));
+
+            dateFromFilter.setValue(LocalDate.of(2026, 1, 1));
+            dateToFilter.setValue(LocalDate.of(2026, 1, 10));
+            trackFilter.setValue(null);
+            terminalFilter.setValue(data.terminal());
+
+            SpreadsheetComponent<?> spreadsheetComponent = UiTestUtils.getComponent(view, "shipmentsSpreadsheet");
+            MultiSelectComboBox<PortBalanceMetric> metrics =
+                    UiTestUtils.getComponent(view, "metricsSelector");
+            filter.getDataLoader().load();
+
+            Spreadsheet spreadsheet = spreadsheetComponent.getSpreadsheet();
+            Assertions.assertThat(spreadsheet).isNotNull();
+
+            metrics.setValue(EnumSet.of(PortBalanceMetric.IN));
+            spreadsheetComponent.reload();
+
+            Assertions.assertThat(rowContains(spreadsheet, 2, "IN")).isTrue();
+            Assertions.assertThat(rowContains(spreadsheet, 2, "OUT")).isFalse();
+            Assertions.assertThat(rowContains(spreadsheet, 2, "STOCK")).isFalse();
+            assertSingleMetricTrackHeaderGrouping(spreadsheet, "PB26 Track BASIC", "IN");
+            assertSingleMetricTrackHeaderGrouping(spreadsheet, "PB26 Track Plan PLANNING", "IN");
+            assertClientMergedRegionsInSync(spreadsheet);
+        } finally {
+            dialog.close();
+        }
+    }
+
+    @Test
+    void reAddingMetricsExpandsSpreadsheetColumnCount() {
+        TestDataFactory factory = new TestDataFactory(dataManager);
+        January2026PortBalanceData data = factory.ensureJanuary2026PortBalanceData();
+
+        View<?> origin = UiTestUtils.getCurrentView();
+        DialogWindow<View<?>> dialog = dialogWindows.view(origin, "ShipmentSpreadsheet.list").open();
+
+        try {
+            View<?> view = dialog.getView();
+            GenericFilter filter = UiTestUtils.getComponent(view, "genericFilter");
+            Assertions.assertThat(filter).isNotNull();
+
+            if (filter.getCurrentConfiguration() == filter.getEmptyConfiguration()) {
+                var defaultConfiguration = filter.getConfiguration("defaultConfiguration");
+                if (defaultConfiguration != null) {
+                    filter.setCurrentConfiguration(defaultConfiguration);
+                }
+            }
+            filter.setAutoApply(false);
+
+            PropertyFilter<LocalDate> dateFromFilter = castFilter(findPropertyFilter(
+                    filter, "date", PropertyFilter.Operation.GREATER_OR_EQUAL));
+            PropertyFilter<LocalDate> dateToFilter = castFilter(findPropertyFilter(
+                    filter, "date", PropertyFilter.Operation.LESS_OR_EQUAL));
+            PropertyFilter<com.digtp.scm.entity.Track> trackFilter = castFilter(
+                    findPropertyFilter(filter, "track", PropertyFilter.Operation.EQUAL));
+            PropertyFilter<com.digtp.scm.entity.Terminal> terminalFilter = castFilter(
+                    findPropertyFilter(filter, "warehouse.terminal", PropertyFilter.Operation.EQUAL));
+
+            dateFromFilter.setValue(LocalDate.of(2026, 1, 1));
+            dateToFilter.setValue(LocalDate.of(2026, 1, 10));
+            trackFilter.setValue(null);
+            terminalFilter.setValue(data.terminal());
+
+            SpreadsheetComponent<?> spreadsheetComponent = UiTestUtils.getComponent(view, "shipmentsSpreadsheet");
+            MultiSelectComboBox<PortBalanceMetric> metrics =
+                    UiTestUtils.getComponent(view, "metricsSelector");
+            filter.getDataLoader().load();
+
+            Spreadsheet spreadsheet = spreadsheetComponent.getSpreadsheet();
+            Assertions.assertThat(spreadsheet).isNotNull();
+
+            metrics.setValue(EnumSet.of(PortBalanceMetric.IN));
+            spreadsheetComponent.reload();
+            int reducedMaxUsedColumn = maxNonEmptyColumnIndex(spreadsheet);
+
+            metrics.setValue(EnumSet.of(PortBalanceMetric.IN, PortBalanceMetric.OUT, PortBalanceMetric.STOCK));
+            spreadsheetComponent.reload();
+            int expandedMaxUsedColumn = maxNonEmptyColumnIndex(spreadsheet);
+
+            Assertions.assertThat(expandedMaxUsedColumn)
+                    .as("Workbook used area should expand when metrics are added back")
+                    .isGreaterThan(reducedMaxUsedColumn);
+            Assertions.assertThat(rowContains(spreadsheet, 2, "OUT")).isTrue();
+            Assertions.assertThat(rowContains(spreadsheet, 2, "STOCK")).isTrue();
+        } finally {
+            dialog.close();
+        }
+    }
+
+    @Test
+    void reAddingMetricsExpandsSheetBoundsToCoverWorkbookCells() {
+        TestDataFactory factory = new TestDataFactory(dataManager);
+        January2026PortBalanceData data = factory.ensureJanuary2026PortBalanceData();
+
+        View<?> origin = UiTestUtils.getCurrentView();
+        DialogWindow<View<?>> dialog = dialogWindows.view(origin, "ShipmentSpreadsheet.list").open();
+
+        try {
+            View<?> view = dialog.getView();
+            GenericFilter filter = UiTestUtils.getComponent(view, "genericFilter");
+            Assertions.assertThat(filter).isNotNull();
+
+            if (filter.getCurrentConfiguration() == filter.getEmptyConfiguration()) {
+                var defaultConfiguration = filter.getConfiguration("defaultConfiguration");
+                if (defaultConfiguration != null) {
+                    filter.setCurrentConfiguration(defaultConfiguration);
+                }
+            }
+            filter.setAutoApply(false);
+
+            PropertyFilter<LocalDate> dateFromFilter = castFilter(findPropertyFilter(
+                    filter, "date", PropertyFilter.Operation.GREATER_OR_EQUAL));
+            PropertyFilter<LocalDate> dateToFilter = castFilter(findPropertyFilter(
+                    filter, "date", PropertyFilter.Operation.LESS_OR_EQUAL));
+            PropertyFilter<com.digtp.scm.entity.Track> trackFilter = castFilter(
+                    findPropertyFilter(filter, "track", PropertyFilter.Operation.EQUAL));
+            PropertyFilter<com.digtp.scm.entity.Terminal> terminalFilter = castFilter(
+                    findPropertyFilter(filter, "warehouse.terminal", PropertyFilter.Operation.EQUAL));
+
+            dateFromFilter.setValue(LocalDate.of(2026, 1, 1));
+            dateToFilter.setValue(LocalDate.of(2026, 1, 10));
+            trackFilter.setValue(null);
+            terminalFilter.setValue(data.terminal());
+
+            SpreadsheetComponent<?> spreadsheetComponent = UiTestUtils.getComponent(view, "shipmentsSpreadsheet");
+            MultiSelectComboBox<PortBalanceMetric> metrics =
+                    UiTestUtils.getComponent(view, "metricsSelector");
+            filter.getDataLoader().load();
+
+            Spreadsheet spreadsheet = spreadsheetComponent.getSpreadsheet();
+            Assertions.assertThat(spreadsheet).isNotNull();
+
+            metrics.setValue(EnumSet.of(PortBalanceMetric.IN));
+            spreadsheetComponent.reload();
+
+            metrics.setValue(EnumSet.of(PortBalanceMetric.IN, PortBalanceMetric.OUT, PortBalanceMetric.STOCK));
+            spreadsheetComponent.reload();
+
+            assertSheetBoundsCoverWorkbook(spreadsheet);
+            assertInternalSizeStateCoversVisibleArea(spreadsheet);
+        } finally {
+            dialog.close();
+        }
+    }
+
+    @Test
     void lookupViewsAreAvailableForFilters() {
         View<?> origin = UiTestUtils.getCurrentView();
 
@@ -578,6 +815,212 @@ class ShipmentSpreadsheetViewUiTest {
             }
         }
         return false;
+    }
+
+    private int maxNonEmptyColumnIndex(Spreadsheet spreadsheet) {
+        if (spreadsheet == null || spreadsheet.getWorkbook() == null) {
+            return -1;
+        }
+        Sheet sheet = spreadsheet.getWorkbook().getSheetAt(0);
+        int maxColumn = -1;
+        for (org.apache.poi.ss.usermodel.Row row : sheet) {
+            for (org.apache.poi.ss.usermodel.Cell cell : row) {
+                if (cell.getCellType() == org.apache.poi.ss.usermodel.CellType.BLANK) {
+                    continue;
+                }
+                if (cell.getCellType() == org.apache.poi.ss.usermodel.CellType.STRING
+                        && (cell.getStringCellValue() == null || cell.getStringCellValue().isBlank())) {
+                    continue;
+                }
+                maxColumn = Math.max(maxColumn, cell.getColumnIndex());
+            }
+        }
+        return maxColumn;
+    }
+
+    private void assertTrackHeaderGrouping(Spreadsheet spreadsheet, String trackLabel) {
+        Sheet sheet = spreadsheet.getWorkbook().getSheetAt(0);
+        org.apache.poi.ss.usermodel.Row trackHeaderRow = sheet.getRow(1);
+        Assertions.assertThat(trackHeaderRow).isNotNull();
+
+        List<Integer> headerColumns = new ArrayList<>();
+        for (org.apache.poi.ss.usermodel.Cell cell : trackHeaderRow) {
+            if (cell.getCellType() == org.apache.poi.ss.usermodel.CellType.STRING
+                    && trackLabel.equals(cell.getStringCellValue())) {
+                headerColumns.add(cell.getColumnIndex());
+            }
+        }
+
+        Assertions.assertThat(headerColumns)
+                .as("track header '" + trackLabel + "' must be present")
+                .isNotEmpty();
+
+        for (Integer startColumn : headerColumns) {
+            Assertions.assertThat(cellText(sheet, 2, startColumn)).isEqualTo("IN");
+            Assertions.assertThat(cellText(sheet, 2, startColumn + 1)).isEqualTo("OUT");
+
+            Integer mergedLastColumn = mergedRegionLastColumn(sheet, 1, 1, startColumn);
+            Assertions.assertThat(mergedLastColumn)
+                    .as("second-level track group width for '" + trackLabel + "'")
+                    .isEqualTo(startColumn + 1);
+        }
+    }
+
+    private void assertSingleMetricTrackHeaderGrouping(Spreadsheet spreadsheet,
+                                                       String trackLabel,
+                                                       String metricCaption) {
+        Sheet sheet = spreadsheet.getWorkbook().getSheetAt(0);
+        org.apache.poi.ss.usermodel.Row trackHeaderRow = sheet.getRow(1);
+        Assertions.assertThat(trackHeaderRow).isNotNull();
+
+        List<Integer> headerColumns = new ArrayList<>();
+        for (org.apache.poi.ss.usermodel.Cell cell : trackHeaderRow) {
+            if (cell.getCellType() == org.apache.poi.ss.usermodel.CellType.STRING
+                    && trackLabel.equals(cell.getStringCellValue())) {
+                headerColumns.add(cell.getColumnIndex());
+            }
+        }
+
+        Assertions.assertThat(headerColumns)
+                .as("track header '" + trackLabel + "' must be present in single metric mode")
+                .isNotEmpty();
+
+        for (Integer startColumn : headerColumns) {
+            Assertions.assertThat(cellText(sheet, 2, startColumn)).isEqualTo(metricCaption);
+            Integer mergedLastColumn = mergedRegionLastColumn(sheet, 1, 1, startColumn);
+            Assertions.assertThat(mergedLastColumn)
+                    .as("single metric mode should not merge track header '" + trackLabel + "' with neighbor")
+                    .isNull();
+        }
+    }
+
+    private Integer mergedRegionLastColumn(Sheet sheet, int firstRow, int lastRow, int firstColumn) {
+        for (CellRangeAddress region : sheet.getMergedRegions()) {
+            if (region.getFirstRow() == firstRow
+                    && region.getLastRow() == lastRow
+                    && region.getFirstColumn() == firstColumn) {
+                return region.getLastColumn();
+            }
+        }
+        return null;
+    }
+
+    private void assertClientMergedRegionsInSync(Spreadsheet spreadsheet) {
+        Sheet sheet = spreadsheet.getWorkbook().getSheetAt(0);
+        Set<String> workbookRegions = new HashSet<>();
+        for (CellRangeAddress region : sheet.getMergedRegions()) {
+            workbookRegions.add(region.getFirstRow() + ":" + region.getLastRow()
+                    + ":" + region.getFirstColumn() + ":" + region.getLastColumn());
+        }
+
+        Set<String> componentRegions = new HashSet<>();
+        for (Object region : readComponentMergedRegions(spreadsheet)) {
+            int row1 = readMergedField(region, "row1") - 1;
+            int row2 = readMergedField(region, "row2") - 1;
+            int col1 = readMergedField(region, "col1") - 1;
+            int col2 = readMergedField(region, "col2") - 1;
+            componentRegions.add(row1 + ":" + row2 + ":" + col1 + ":" + col2);
+        }
+
+        Assertions.assertThat(componentRegions)
+                .as("Spreadsheet merged region state must match workbook merged regions")
+                .isEqualTo(workbookRegions);
+    }
+
+    private void assertSheetBoundsCoverWorkbook(Spreadsheet spreadsheet) {
+        Sheet sheet = spreadsheet.getWorkbook().getSheetAt(0);
+        int workbookMaxRow = -1;
+        int workbookMaxCol = -1;
+        for (org.apache.poi.ss.usermodel.Row row : sheet) {
+            for (org.apache.poi.ss.usermodel.Cell cell : row) {
+                if (cell.getCellType() == org.apache.poi.ss.usermodel.CellType.BLANK) {
+                    continue;
+                }
+                if (cell.getCellType() == org.apache.poi.ss.usermodel.CellType.STRING
+                        && (cell.getStringCellValue() == null || cell.getStringCellValue().isBlank())) {
+                    continue;
+                }
+                workbookMaxRow = Math.max(workbookMaxRow, cell.getRowIndex());
+                workbookMaxCol = Math.max(workbookMaxCol, cell.getColumnIndex());
+            }
+        }
+        Assertions.assertThat(workbookMaxRow).isGreaterThanOrEqualTo(0);
+        Assertions.assertThat(workbookMaxCol).isGreaterThanOrEqualTo(0);
+        Assertions.assertThat(spreadsheet.getColumns())
+                .as("Spreadsheet visible column bound must include workbook right boundary")
+                .isGreaterThanOrEqualTo(workbookMaxCol + 1);
+        Assertions.assertThat(spreadsheet.getRows())
+                .as("Spreadsheet visible row bound must include workbook bottom boundary")
+                .isGreaterThanOrEqualTo(workbookMaxRow + 1);
+    }
+
+    private void assertInternalSizeStateCoversVisibleArea(Spreadsheet spreadsheet) {
+        try {
+            Field colWField = Spreadsheet.class.getDeclaredField("colW");
+            colWField.setAccessible(true);
+            Object colWValue = colWField.get(spreadsheet);
+            Assertions.assertThat(colWValue).isInstanceOf(int[].class);
+            int[] colW = (int[]) colWValue;
+            Assertions.assertThat(colW.length)
+                    .as("Internal column width array must cover visible column area")
+                    .isGreaterThanOrEqualTo(spreadsheet.getColumns());
+
+            Field rowHField = Spreadsheet.class.getDeclaredField("rowH");
+            rowHField.setAccessible(true);
+            Object rowHValue = rowHField.get(spreadsheet);
+            Assertions.assertThat(rowHValue).isInstanceOf(float[].class);
+            float[] rowH = (float[]) rowHValue;
+            Assertions.assertThat(rowH.length)
+                    .as("Internal row height array must cover visible row area")
+                    .isGreaterThanOrEqualTo(spreadsheet.getRows());
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Failed to read internal spreadsheet size state", e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Object> readComponentMergedRegions(Spreadsheet spreadsheet) {
+        try {
+            Field field = Spreadsheet.class.getDeclaredField("mergedRegions");
+            field.setAccessible(true);
+            Object value = field.get(spreadsheet);
+            if (value == null) {
+                return List.of();
+            }
+            if (value instanceof List<?>) {
+                return (List<Object>) value;
+            }
+            throw new IllegalStateException("Unexpected mergedRegions type: " + value.getClass().getName());
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Failed to read merged regions from Spreadsheet", e);
+        }
+    }
+
+    private int readMergedField(Object region, String fieldName) {
+        try {
+            Field field = region.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field.getInt(region);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Failed to read merged region field: " + fieldName, e);
+        }
+    }
+
+    private String cellText(Sheet sheet, int rowIndex, int columnIndex) {
+        org.apache.poi.ss.usermodel.Row row = sheet.getRow(rowIndex);
+        if (row == null) {
+            return null;
+        }
+        org.apache.poi.ss.usermodel.Cell cell = row.getCell(columnIndex);
+        if (cell == null) {
+            return null;
+        }
+        return switch (cell.getCellType()) {
+            case STRING -> cell.getStringCellValue();
+            case NUMERIC -> String.valueOf((int) cell.getNumericCellValue());
+            case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
+            default -> null;
+        };
     }
 
     private Cell findCell(Spreadsheet spreadsheet, String expected) {

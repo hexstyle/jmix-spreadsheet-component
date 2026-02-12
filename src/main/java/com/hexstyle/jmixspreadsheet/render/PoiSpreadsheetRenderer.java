@@ -69,6 +69,8 @@ public class PoiSpreadsheetRenderer<E> extends DefaultSpreadsheetRenderer<E, Spr
                         for (int i = numMergedRegions - 1; i >= 0; i--) {
                             sheet.removeMergedRegion(i);
                         }
+                        // Keep Spreadsheet state in sync with POI after bulk merge cleanup.
+                        component.reloadAllMergedRegions();
                         var rowIterator = sheet.rowIterator();
                         while (rowIterator.hasNext()) {
                             var row = rowIterator.next();
